@@ -476,7 +476,7 @@ function bucketBadge(bk) {
 }
 
 function renderIntegrante(i, gid, gnm) {
-  const waMsg = encodeURIComponent(`Hola, buen día 👋\n\nLe contactamos de *EXITUS CONTIGO*.\n\nNos gustaría platicar con usted sobre su situación con el grupo *${gnm}* (Ref. ${gid}).\n\nEstamos para apoyarle y encontrar juntos la mejor alternativa. ¿Podría comunicarse con nosotros?\n\nQuedamos a sus órdenes. 🙏`);
+  const waMsg = encodeURIComponent(`Hola, buen día 👋\n\nLe contactamos de *EXITUS CONTIGO*.\n\nNos gustaría platicar con usted, *${i.n}*, sobre su situación con el grupo *${gnm}* (Ref. ${gid}).\n\nEstamos para apoyarle y encontrar juntos la mejor alternativa. ¿Podría comunicarse con nosotros?\n\nQuedamos a sus órdenes. 🙏`);
   return `<div class="integrante">
     <div class="int-nombre">${i.n}</div>
     <div class="int-grid">
