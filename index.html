@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketing Suite — Cotizador + IA</title>
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a23;
+      --surface2: #22222e;
+      --border: #2e2e3e;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      gap: 4px;
+      position: fixed;
+      top: 0; left: 0;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 24px;
+      padding-left: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span { font-size: 1.4rem; }
+
+    .nav-section {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      padding: 12px 8px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--muted);
+      transition: all .2s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--accent); color: #fff; }
+    .nav-item .icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+    /* ── Main ── */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 32px;
+      max-width: calc(100vw - 240px);
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+    h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+    .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+
+    /* ── Cards ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    .card-icon { font-size: 2rem; margin-bottom: 12px; }
+    .card-title { font-weight: 600; margin-bottom: 6px; }
+    .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Forms & Inputs ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+
+    input, select, textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.875rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color .2s;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 90px; }
+
+    select option { background: var(--surface2); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #5a52d5; }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+
+    /* ── Output box ── */
+    .output-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 24px;
+      white-space: pre-wrap;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      min-height: 120px;
+      color: var(--text);
+    }
+
+    .output-box.loading { color: var(--muted); font-style: italic; }
+
+    /* ── Quote table ── */
+    .quote-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    .quote-table th, .quote-table td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .quote-table th { color: var(--muted); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; }
+    .quote-table td:last-child { text-align: right; font-weight: 600; }
+    .quote-total td { font-size: 1.1rem; color: var(--accent2); }
+
+    /* ── Tags ── */
+    .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .tag-purple { background: rgba(108,99,255,.15); color: var(--accent2); }
+    .tag-green { background: rgba(16,185,129,.15); color: var(--green); }
+
+    /* ── Skill chips ── */
+    .skill-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .skill-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all .2s;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .skill-chip:hover, .skill-chip.active { border-color: var(--accent); color: var(--accent2); background: rgba(108,99,255,.1); }
+
+    /* ── Dashboard stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; }
+    .stat-change { font-size: 0.75rem; margin-top: 4px; }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+
+    /* ── Pricing tiers ── */
+    .tiers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .tier {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+    }
+
+    .tier.recommended { border-color: var(--accent); }
+
+    .tier-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 20px;
+    }
+
+    .tier-name { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .tier-price { font-size: 2rem; font-weight: 700; color: var(--accent2); margin-bottom: 4px; }
+    .tier-period { font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
+    .tier-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .tier-features li { font-size: 0.83rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .tier-features li::before { content: "✓"; color: var(--green); font-weight: 700; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; max-width: 100vw; padding: 16px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .tiers { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="logo"><span>🚀</span> MarketingAI</div>
+
+  <div class="nav-section">Principal</div>
+  <button class="nav-item active" onclick="showPage('dashboard')">
+    <span class="icon">🏠</span> Dashboard
+  </button>
+  <button class="nav-item" onclick="showPage('cotizador')">
+    <span class="icon">💰</span> Cotizador
+  </button>
+
+  <div class="nav-section">Marketing</div>
+  <button class="nav-item" onclick="showPage('copywriting')">
+    <span class="icon">✍️</span> Copywriting
+  </button>
+  <button class="nav-item" onclick="showPage('emails')">
+    <span class="icon">📧</span> Emails
+  </button>
+  <button class="nav-item" onclick="showPage('social')">
+    <span class="icon">📱</span> Redes Sociales
+  </button>
+  <button class="nav-item" onclick="showPage('pricing')">
+    <span class="icon">📊</span> Estrategia de Precios
+  </button>
+
+  <div class="nav-section">Contenido</div>
+  <button class="nav-item" onclick="showPage('content')">
+    <span class="icon">📝</span> Estrategia de Contenido
+  </button>
+  <button class="nav-item" onclick="showPage('ads')">
+    <span class="icon">🎯</span> Anuncios (Ads)
+  </button>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- ── DASHBOARD ── -->
+  <section id="dashboard" class="page active">
+    <h1>Dashboard</h1>
+    <p class="subtitle">Tu suite de marketing con IA — cotiza, crea y convierte.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Cotizaciones generadas</div>
+        <div class="stat-value" id="stat-quotes">0</div>
+        <div class="stat-change up">↑ listas para enviar</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Contenidos creados</div>
+        <div class="stat-value" id="stat-content">0</div>
+        <div class="stat-change up">↑ con IA</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Emails generados</div>
+        <div class="stat-value" id="stat-emails">0</div>
+        <div class="stat-change up">↑ listos para enviar</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Skills disponibles</div>
+        <div class="stat-value">42</div>
+        <div class="stat-change up">↑ de marketingskills</div>
+      </div>
+    </div>
+
+    <h2>¿Qué quieres hacer hoy?</h2>
+    <div class="cards">
+      <div class="card" onclick="showPage('cotizador')">
+        <div class="card-icon">💰</div>
+        <div class="card-title">Cotizador Inteligente</div>
+        <div class="card-desc">Genera propuestas y cotizaciones profesionales con precios dinámicos y estrategia incluida.</div>
+      </div>
+      <div class="card" onclick="showPage('copywriting')">
+        <div class="card-icon">✍️</div>
+        <div class="card-title">Copywriting</div>
+        <div class="card-desc">Escribe copy de alto impacto para páginas web, landing pages y más, siguiendo mejores prácticas.</div>
+      </div>
+      <div class="card" onclick="showPage('emails')">
+        <div class="card-icon">📧</div>
+        <div class="card-title">Secuencias de Email</div>
+        <div class="card-desc">Diseña campañas de email: bienvenida, nurture, re-engagement y más.</div>
+      </div>
+      <div class="card" onclick="showPage('social')">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Redes Sociales</div>
+        <div class="card-desc">Crea posts para LinkedIn, Twitter/X, Instagram y TikTok con estrategia de plataforma.</div>
+      </div>
+      <div class="card" onclick="showPage('pricing')">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Estrategia de Precios</div>
+        <div class="card-desc">Define tus tiers, métricas de valor y psicología de precios para maximizar ingresos.</div>
+      </div>
+      <div class="card" onclick="showPage('ads')">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Anuncios (Ads)</div>
+        <div class="card-desc">Crea creativos y copy para Google Ads, Meta Ads y más con estructura probada.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COTIZADOR ── -->
+  <section id="cotizador" class="page">
+    <h1>💰 Cotizador Inteligente</h1>
+    <p class="subtitle">Genera cotizaciones profesionales con precios estratégicos.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre del cliente</label>
+        <input type="text" id="q-cliente" placeholder="Ej. Empresa ABC" />
+      </div>
+      <div class="form-group">
+        <label>Tipo de proyecto</label>
+        <select id="q-tipo">
+          <option value="">Selecciona...</option>
+          <option value="web">Sitio Web</option>
+          <option value="marketing">Campaña de Marketing</option>
+          <option value="seo">SEO</option>
+          <option value="ads">Publicidad Pagada</option>
+          <option value="contenido">Estrategia de Contenido</option>
+          <option value="branding">Branding</option>
+          <option value="ecommerce">E-commerce</option>
+          <option value="app">Aplicación / App</option>
+          <option value="consultoria">Consultoría</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Presupuesto estimado del cliente</label>
+        <select id="q-presupuesto">
+          <option value="">Selecciona...</option>
+          <option value="bajo">Bajo (< $500)</option>
+          <option value="medio">Medio ($500 – $2,000)</option>
+          <option value="alto">Alto ($2,000 – $10,000)</option>
+          <option value="enterprise">Enterprise ($10,000+)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Plazo de entrega</label>
+        <select id="q-plazo">
+          <option value="">Selecciona...</option>
+          <option value="urgente">Urgente (1-2 semanas)</option>
+          <option value="normal">Normal (1 mes)</option>
+          <option value="relajado">Relajado (2-3 meses)</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Descripción del proyecto</label>
+        <textarea id="q-descripcion" placeholder="Describe qué necesita el cliente, objetivos, alcance..."></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="generarCotizacion()">⚡ Generar Cotización</button>
+      <button class="btn btn-secondary" onclick="limpiarCotizacion()">🗑 Limpiar</button>
+    </div>
+
+    <div id="cotizacion-output" style="display:none;margin-top:24px;">
+      <h2>Propuesta Generada</h2>
+      <table class="quote-table">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody id="quote-items"></tbody>
+        <tfoot>
+          <tr class="quote-total">
+            <td colspan="2"><strong>Total estimado</strong></td>
+            <td id="quote-total">$0</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="output-box" id="quote-strategy"></div>
+
+      <div style="margin-top:16px;display:flex;gap:12px;">
+        <button class="btn btn-primary btn-sm" onclick="exportarCotizacion()">📄 Exportar PDF</button>
+        <button class="btn btn-secondary btn-sm" onclick="copiarCotizacion()">📋 Copiar texto</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COPYWRITING ── -->
+  <section id="copywriting" class="page">
+    <h1>✍️ Copywriting con IA</h1>
+    <p class="subtitle">Copy que convierte — headlines, páginas, CTAs y más.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Tipo de página</label>
+        <select id="copy-tipo">
+          <option value="homepage">Homepage</option>
+          <option value="landing">Landing Page</option>
+          <option value="pricing">Página de Precios</option>
+          <option value="feature">Página de Características</option>
+          <option value="about">Página Sobre Nosotros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tono de marca</label>
+        <select id="copy-tono">
+          <option value="profesional">Profesional</option>
+          <option value="casual">Casual / Conversacional</option>
+          <option value="técnico">Técnico</option>
+          <option value="inspirador">Inspirador</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Producto / Servicio</label>
+        <input type="text" id="copy-producto" placeholder="Ej. Software de gestión de proyectos para equipos remotos" />
+      </div>
+      <div class="form-group">
+        <label>Audiencia objetivo</label>
+        <input type="text" id="copy-audiencia" placeholder="Ej. Startups B2B con 10-50 empleados" />
+      </div>
+      <div class="form-group">
+        <label>Principal beneficio / propuesta de valor</label>
+        <input type="text" id="copy-valor" placeholder="Ej. Reduce el tiempo de reportes de 4h a 15min" />
+      </div>
+      <div class="form-group full">
+        <label>Objeciones comunes</label>
+        <textarea id="copy-objeciones" placeholder="¿Qué dudas tiene tu cliente antes de comprar?"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generarCopy()">✨ Generar Copy</button>
+
+    <div class="output-box loading" id="copy-output" style="margin-top:24px;">
+      Tu copy aparecerá aquí...
+    </div>
+    <div style="margin-top:12px;display:flex;gap:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('copy-output')">📋 Copiar</button>
+    </div>
+  </section>
+
+  <!-- ── EMAILS ── -->
+  <section id="emails" class="page">
+    <h1>📧 Generador de Emails</h1>
+    <p class="subtitle">Secuencias de email que nutren, retienen y convierten.</p>
+
+    <div class="skill-chips">
+      <button class="skill-chip active" onclick="setEmailTipo(this,'bienvenida')">👋 Bienvenida</button>
+      <button class="skill-chip" onclick="setEmailTipo(this,'nurture')">🌱 Nurture / Leads</button>
+      <button class="skill-chip" onclick="setEmailTipo(this,'reengagement')">♻️ Re-engagement</button>
+      <button class="skill-chip" onclick="setEmailTipo(this,'onboarding')">🚀 Onboarding</button>
+      <button class="skill-chip" onclick="setEmailTipo(this,'frio')">❄️ Email Frío</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Producto / Servicio</label>
+        <input type="text" id="email-producto" placeholder="Ej. Plataforma de automatización de marketing" />
+      </div>
+      <div class="form-group">
+        <label>Audiencia / Suscriptor</label>
+        <input type="text" id="email-audiencia" placeholder="Ej. Dueños de pequeñas empresas" />
+      </div>
+      <div class="form-group">
+        <label>Objetivo principal</label>
+        <input type="text" id="email-objetivo" placeholder="Ej. Convertir a plan de pago" />
+      </div>
+      <div class="form-group full">
+        <label>Contexto adicional</label>
+        <textarea id="email-contexto" placeholder="¿Qué sabe ya el suscriptor? ¿Qué problema tiene?"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generarEmail()">📨 Generar Secuencia de Email</button>
+
+    <div class="output-box loading" id="email-output" style="margin-top:24px;">
+      Tu secuencia de emails aparecerá aquí...
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('email-output')">📋 Copiar</button>
+    </div>
+  </section>
+
+  <!-- ── SOCIAL ── -->
+  <section id="social" class="page">
+    <h1>📱 Contenido para Redes Sociales</h1>
+    <p class="subtitle">Posts que generan engagement — con estrategia de plataforma incluida.</p>
+
+    <div class="skill-chips">
+      <button class="skill-chip active" onclick="setPlatform(this,'linkedin')">💼 LinkedIn</button>
+      <button class="skill-chip" onclick="setPlatform(this,'twitter')">🐦 Twitter/X</button>
+      <button class="skill-chip" onclick="setPlatform(this,'instagram')">📸 Instagram</button>
+      <button class="skill-chip" onclick="setPlatform(this,'tiktok')">🎵 TikTok</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Tema / Idea del post</label>
+        <input type="text" id="social-tema" placeholder="Ej. 5 errores que cometen los emprendedores al contratar" />
+      </div>
+      <div class="form-group">
+        <label>Objetivo</label>
+        <select id="social-objetivo">
+          <option value="awareness">Brand awareness</option>
+          <option value="engagement">Engagement / Comunidad</option>
+          <option value="leads">Generar leads</option>
+          <option value="trafico">Tráfico al sitio</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tono</label>
+        <select id="social-tono">
+          <option value="profesional">Profesional</option>
+          <option value="casual">Casual</option>
+          <option value="educativo">Educativo</option>
+          <option value="inspirador">Inspirador</option>
+          <option value="humoristico">Humorístico</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Contexto de tu marca / negocio</label>
+        <textarea id="social-marca" placeholder="¿Qué haces? ¿A quién ayudas? ¿Cuál es tu diferenciador?"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generarSocial()">📲 Generar Post</button>
+
+    <div class="output-box loading" id="social-output" style="margin-top:24px;">
+      Tu post aparecerá aquí...
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('social-output')">📋 Copiar</button>
+    </div>
+  </section>
+
+  <!-- ── PRICING ── -->
+  <section id="pricing" class="page">
+    <h1>📊 Estrategia de Precios</h1>
+    <p class="subtitle">Define tiers, métricas de valor y psicología de precios para maximizar ingresos.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Tipo de negocio</label>
+        <select id="p-tipo">
+          <option value="saas">SaaS</option>
+          <option value="servicio">Servicio / Agencia</option>
+          <option value="ecommerce">E-commerce</option>
+          <option value="marketplace">Marketplace</option>
+          <option value="consultoria">Consultoría</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mercado objetivo</label>
+        <select id="p-mercado">
+          <option value="smb">SMB (pequeñas empresas)</option>
+          <option value="midmarket">Mid-market</option>
+          <option value="enterprise">Enterprise</option>
+          <option value="consumidor">Consumidor final (B2C)</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Descripción del producto / servicio</label>
+        <input type="text" id="p-producto" placeholder="Ej. Plataforma de gestión de proyectos con IA" />
+      </div>
+      <div class="form-group">
+        <label>Precio actual (si existe)</label>
+        <input type="text" id="p-precio-actual" placeholder="Ej. $29/mes o sin precio aún" />
+      </div>
+      <div class="form-group">
+        <label>Principal competidor</label>
+        <input type="text" id="p-competidor" placeholder="Ej. Asana, Trello, Monday..." />
+      </div>
+      <div class="form-group full">
+        <label>¿Qué valor principal entrega?</label>
+        <textarea id="p-valor" placeholder="¿Qué resultado tangible obtiene el cliente? ¿Cuánto tiempo/dinero le ahorra?"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generarPricing()">💡 Generar Estrategia de Precios</button>
+
+    <div id="pricing-tiers-output" style="display:none;margin-top:24px;">
+      <h2>Estructura de Precios Recomendada</h2>
+      <div class="tiers" id="pricing-tiers"></div>
+    </div>
+
+    <div class="output-box loading" id="pricing-output" style="margin-top:16px;">
+      Tu estrategia de precios aparecerá aquí...
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('pricing-output')">📋 Copiar</button>
+    </div>
+  </section>
+
+  <!-- ── CONTENT STRATEGY ── -->
+  <section id="content" class="page">
+    <h1>📝 Estrategia de Contenido</h1>
+    <p class="subtitle">Plan de contenido que atrae, convierte y posiciona tu marca.</p>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>¿Qué hace tu empresa?</label>
+        <input type="text" id="cs-empresa" placeholder="Ej. Ayudamos a restaurantes a automatizar su sistema de reservas" />
+      </div>
+      <div class="form-group">
+        <label>Cliente ideal</label>
+        <input type="text" id="cs-cliente" placeholder="Ej. Dueños de restaurantes medianos en LATAM" />
+      </div>
+      <div class="form-group">
+        <label>Objetivo principal del contenido</label>
+        <select id="cs-objetivo">
+          <option value="trafico">Tráfico orgánico (SEO)</option>
+          <option value="leads">Generación de leads</option>
+          <option value="awareness">Brand awareness</option>
+          <option value="liderazgo">Liderazgo de pensamiento</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Formatos disponibles</label>
+        <select id="cs-formato" multiple style="height:80px;">
+          <option value="blog" selected>Blog / Artículos</option>
+          <option value="video">Video</option>
+          <option value="social">Redes Sociales</option>
+          <option value="newsletter">Newsletter</option>
+          <option value="podcast">Podcast</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Preguntas frecuentes de tus clientes</label>
+        <textarea id="cs-preguntas" placeholder="¿Qué preguntas hacen antes de comprar? ¿Qué les preocupa?"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generarContenido()">🗺 Generar Plan de Contenido</button>
+
+    <div class="output-box loading" id="content-output" style="margin-top:24px;">
+      Tu plan de contenido aparecerá aquí...
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('content-output')">📋 Copiar</button>
+    </div>
+  </section>
+
+  <!-- ── ADS ── -->
+  <section id="ads" class="page">
+    <h1>🎯 Creativos de Anuncios</h1>
+    <p class="subtitle">Copy y estructura para anuncios que convierten — Google, Meta y más.</p>
+
+    <div class="skill-chips">
+      <button class="skill-chip active" onclick="setAdPlatform(this,'google')">🔍 Google Ads</button>
+      <button class="skill-chip" onclick="setAdPlatform(this,'meta')">📘 Meta Ads</button>
+      <button class="skill-chip" onclick="setAdPlatform(this,'linkedin-ads')">💼 LinkedIn Ads</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Producto / Servicio anunciado</label>
+        <input type="text" id="ad-producto" placeholder="Ej. Curso online de marketing digital" />
+      </div>
+      <div class="form-group">
+        <label>Audiencia objetivo</label>
+        <input type="text" id="ad-audiencia" placeholder="Ej. Emprendedores 25-45 años" />
+      </div>
+      <div class="form-group">
+        <label>Objetivo del anuncio</label>
+        <select id="ad-objetivo">
+          <option value="conversiones">Conversiones / Ventas</option>
+          <option value="trafico">Tráfico al sitio</option>
+          <option value="leads">Generación de leads</option>
+          <option value="awareness">Brand awareness</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Oferta / CTA principal</label>
+        <input type="text" id="ad-oferta" placeholder="Ej. Prueba gratis 14 días, Descuento 30%..." />
+      </div>
+      <div class="form-group">
+        <label>Principal diferenciador</label>
+        <input type="text" id="ad-diferenciador" placeholder="¿Por qué eres mejor que la competencia?" />
+      </div>
+      <div class="form-group full">
+        <label>Objeciones que tiene el cliente</label>
+        <textarea id="ad-objeciones" placeholder="¿Qué le impide comprar? Precio, confianza, tiempo..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generarAds()">🎯 Generar Anuncios</button>
+
+    <div class="output-box loading" id="ads-output" style="margin-top:24px;">
+      Tus anuncios aparecerán aquí...
+    </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('ads-output')">📋 Copiar</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ── State ──
+  let emailTipo = 'bienvenida';
+  let platform = 'linkedin';
+  let adPlatform = 'google';
+  let stats = { quotes: 0, content: 0, emails: 0 };
+
+  // ── Navigation ──
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    // highlight nav
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick')?.includes(id)) n.classList.add('active');
+    });
+  }
+
+  // ── Chip selectors ──
+  function setEmailTipo(el, tipo) {
+    document.querySelectorAll('#emails .skill-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    emailTipo = tipo;
+  }
+  function setPlatform(el, p) {
+    document.querySelectorAll('#social .skill-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    platform = p;
+  }
+  function setAdPlatform(el, p) {
+    document.querySelectorAll('#ads .skill-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    adPlatform = p;
+  }
+
+  // ── Update stats ──
+  function updateStat(key) {
+    stats[key]++;
+    const map = { quotes: 'stat-quotes', content: 'stat-content', emails: 'stat-emails' };
+    document.getElementById(map[key]).textContent = stats[key];
+  }
+
+  // ── Utility ──
+  function copiarTexto(id) {
+    const el = document.getElementById(id);
+    navigator.clipboard.writeText(el.textContent).then(() => {
+      const btn = el.nextElementSibling?.querySelector('button');
+      if (btn) { const orig = btn.textContent; btn.textContent = '✅ Copiado'; setTimeout(() => btn.textContent = orig, 1500); }
+    });
+  }
+
+  // ── COTIZADOR ──
+  const serviciosPrecio = {
+    web:        [{ s: 'Diseño y maquetación', d: 'Wireframes + diseño UI responsivo', p: 800 },
+                 { s: 'Desarrollo frontend', d: 'HTML/CSS/JS o framework moderno', p: 1200 },
+                 { s: 'Integración CMS', d: 'Wordpress / Webflow / Strapi', p: 600 }],
+    marketing:  [{ s: 'Estrategia de campaña', d: 'Research, targeting y planificación', p: 700 },
+                 { s: 'Creación de creativos', d: 'Diseño de piezas para anuncios', p: 500 },
+                 { s: 'Gestión y optimización', d: 'Monitoreo mensual + reportes', p: 400 }],
+    seo:        [{ s: 'Auditoría SEO', d: 'Análisis técnico y de contenido', p: 600 },
+                 { s: 'Investigación de keywords', d: 'Clusters temáticos y oportunidades', p: 400 },
+                 { s: 'Optimización on-page', d: 'Meta, headings, schema markup', p: 500 }],
+    ads:        [{ s: 'Configuración de cuenta', d: 'Estructura de campañas y grupos', p: 500 },
+                 { s: 'Creación de anuncios', d: 'Copy, assets y extensiones', p: 400 },
+                 { s: 'Gestión mensual', d: 'Optimización de bids y audiencias', p: 600 }],
+    contenido:  [{ s: 'Estrategia editorial', d: 'Pilares, calendario y formatos', p: 700 },
+                 { s: 'Producción de contenido', d: '8 artículos / posts por mes', p: 800 },
+                 { s: 'Distribución y SEO', d: 'Publicación y optimización', p: 400 }],
+    branding:   [{ s: 'Identidad visual', d: 'Logo, paleta y tipografía', p: 1500 },
+                 { s: 'Brand guidelines', d: 'Manual de marca completo', p: 800 },
+                 { s: 'Assets de marca', d: 'Plantillas para redes y presentaciones', p: 600 }],
+    ecommerce:  [{ s: 'Tienda online', d: 'Shopify / WooCommerce configurado', p: 1500 },
+                 { s: 'Catálogo de productos', d: 'Carga, fotos y descripciones', p: 700 },
+                 { s: 'Pasarela de pagos', d: 'Integración y pruebas', p: 400 }],
+    app:        [{ s: 'Diseño UX/UI', d: 'Flujos, wireframes y prototipos', p: 2000 },
+                 { s: 'Desarrollo MVP', d: 'Funcionalidades core', p: 5000 },
+                 { s: 'QA y lanzamiento', d: 'Testing y publicación en stores', p: 1000 }],
+    consultoria:[{ s: 'Diagnóstico inicial', d: 'Análisis de situación actual', p: 500 },
+                 { s: 'Plan de acción', d: 'Roadmap y recomendaciones', p: 700 },
+                 { s: 'Sesiones de seguimiento', d: '4 sesiones mensuales de 1h', p: 800 }],
+  };
+
+  const multiplicador = { bajo: 0.7, medio: 1.0, alto: 1.3, enterprise: 1.8 };
+  const urgencia = { urgente: 1.25, normal: 1.0, relajado: 0.9 };
+
+  function generarCotizacion() {
+    const cliente = document.getElementById('q-cliente').value || 'Cliente';
+    const tipo = document.getElementById('q-tipo').value;
+    const presupuesto = document.getElementById('q-presupuesto').value;
+    const plazo = document.getElementById('q-plazo').value;
+    const descripcion = document.getElementById('q-descripcion').value;
+
+    if (!tipo) { alert('Selecciona el tipo de proyecto.'); return; }
+
+    const servicios = serviciosPrecio[tipo] || serviciosPrecio.consultoria;
+    const mult = (multiplicador[presupuesto] || 1) * (urgencia[plazo] || 1);
+
+    const tbody = document.getElementById('quote-items');
+    tbody.innerHTML = '';
+    let total = 0;
+
+    servicios.forEach(item => {
+      const precio = Math.round(item.p * mult / 50) * 50;
+      total += precio;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${item.s}</td><td style="color:var(--muted)">${item.d}</td><td>$${precio.toLocaleString()}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('quote-total').textContent = '$' + total.toLocaleString();
+
+    const tipoNombre = document.querySelector('#q-tipo option:checked').text;
+    const plazoNombre = document.querySelector('#q-plazo option:checked')?.text || 'Normal';
+    const presNombre = document.querySelector('#q-presupuesto option:checked')?.text || 'Medio';
+
+    document.getElementById('quote-strategy').textContent =
+`📋 PROPUESTA PARA: ${cliente.toUpperCase()}
+────────────────────────────────
+Proyecto: ${tipoNombre}
+Plazo: ${plazoNombre}
+Nivel: ${presNombre}
+
+${descripcion ? '📝 Contexto: ' + descripcion + '\n\n' : ''}🎯 ESTRATEGIA DE PRESENTACIÓN:
+• Enfatiza el ROI: muestra cuánto puede ganar/ahorrar el cliente con esta inversión.
+• Usa el anclaje de precio: presenta el total primero, luego desglosa para mostrar el valor.
+• Ofrece 3 opciones: esta propuesta (media), una lite (-30%) y una premium (+40%) para usar el efecto señuelo.
+• Incluye una garantía o entregable de riesgo cero para el primer pago.
+• Propón una llamada de 30 minutos para ajustar antes de firmar — esto aumenta la tasa de cierre.
+
+💡 TIP DE PRICING (basado en marketingskills/pricing):
+El precio entre ${presNombre} refleja el valor percibido del cliente.
+Si no objetan el precio, puedes subir 20% en la próxima propuesta.`;
+
+    document.getElementById('cotizacion-output').style.display = 'block';
+    updateStat('quotes');
+  }
+
+  function limpiarCotizacion() {
+    ['q-cliente','q-descripcion'].forEach(id => document.getElementById(id).value = '');
+    ['q-tipo','q-presupuesto','q-plazo'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cotizacion-output').style.display = 'none';
+  }
+
+  function exportarCotizacion() {
+    window.print();
+  }
+
+  function copiarCotizacion() {
+    const tabla = document.getElementById('quote-items').innerText;
+    const strat = document.getElementById('quote-strategy').textContent;
+    navigator.clipboard.writeText(tabla + '\n\n' + strat);
+    alert('¡Cotización copiada al portapapeles!');
+  }
+
+  // ── COPYWRITING ──
+  function generarCopy() {
+    const tipo = document.getElementById('copy-tipo').value;
+    const tono = document.getElementById('copy-tono').value;
+    const producto = document.getElementById('copy-producto').value || 'Tu producto';
+    const audiencia = document.getElementById('copy-audiencia').value || 'Tu audiencia';
+    const valor = document.getElementById('copy-valor').value || 'Ahorra tiempo y dinero';
+    const objeciones = document.getElementById('copy-objeciones').value;
+
+    const tiposNombre = { homepage: 'Homepage', landing: 'Landing Page', pricing: 'Página de Precios', feature: 'Página de Características', about: 'Sobre Nosotros' };
+    const headlines = {
+      profesional: [`La forma más eficiente de ${valor}`, `${producto} — Diseñado para ${audiencia}`],
+      casual: [`¿Cansado de perder tiempo? ${producto} lo resuelve`, `Haz más con menos — ${producto}`],
+      técnico: [`${valor} — sin fricción, sin compromiso`, `Infraestructura inteligente para ${audiencia}`],
+      inspirador: [`Transforma tu negocio. Empieza hoy con ${producto}`, `El futuro de ${audiencia} ya está aquí`],
+    };
+
+    const hl = headlines[tono] || headlines['profesional'];
+
+    const output = `✍️ COPY PARA: ${tiposNombre[tipo]}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔝 ABOVE THE FOLD
+
+Headline A: "${hl[0]}"
+Headline B: "${hl[1]}"
+
+Subheadline:
+"${producto} ayuda a ${audiencia} a ${valor.toLowerCase()} — sin complicaciones y desde el primer día."
+
+CTA Principal: → "Empieza Gratis" / "Ver Demo" / "Calcular mi Precio"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 SECCIÓN: Problema / Dolor
+"¿Sigues perdiendo horas en tareas que deberían ser automáticas?
+La mayoría de ${audiencia} enfrenta el mismo obstáculo: [problema].
+Existe una forma mejor."
+
+📌 SECCIÓN: Beneficios Clave (3-5)
+✓ ${valor}
+✓ Sin curva de aprendizaje — funciona desde el día 1
+✓ Integra con las herramientas que ya usas
+✓ Soporte real cuando lo necesitas
+✓ Resultados medibles en las primeras 2 semanas
+
+📌 SECCIÓN: Prueba Social
+"Más de 1,000 equipos ya usan ${producto}.
+[Testimonial]: 'Desde que implementamos esto, nuestro equipo redujo el tiempo de X en un 60%.' — Cliente, Empresa"
+
+📌 SECCIÓN: Cómo Funciona (3 pasos)
+1. Regístrate en 2 minutos
+2. Configura tu flujo de trabajo
+3. Empieza a ver resultados
+
+${objeciones ? `📌 MANEJO DE OBJECIONES\n${objeciones.split('\n').map(o => `❓ "${o.trim()}"\n✅ [Respuesta que elimina la duda]`).join('\n')}` : ''}
+
+📌 CTA FINAL
+"¿Listo para dejar de perder tiempo?
+Empieza gratis hoy — sin tarjeta de crédito.
+[Botón: Comenzar ahora →]"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 BASADO EN: marketingskills/copywriting
+Principio aplicado: Claridad > creatividad. Beneficios > características.`;
+
+    document.getElementById('copy-output').textContent = output;
+    document.getElementById('copy-output').classList.remove('loading');
+    updateStat('content');
+  }
+
+  // ── EMAILS ──
+  function generarEmail() {
+    const producto = document.getElementById('email-producto').value || 'tu producto';
+    const audiencia = document.getElementById('email-audiencia').value || 'tu audiencia';
+    const objetivo = document.getElementById('email-objetivo').value || 'convertir a cliente de pago';
+    const contexto = document.getElementById('email-contexto').value;
+
+    const secuencias = {
+      bienvenida: [
+        { num: 1, nombre: 'Bienvenida + Entrega de valor', timing: 'Inmediato',
+          asunto: `Bienvenido/a a ${producto} — Empieza aquí`,
+          preview: 'Todo lo que necesitas para dar el primer paso.',
+          cuerpo: `Hola [Nombre],\n\nGracias por unirte. Tomaste una gran decisión.\n\nHere's lo que puedes hacer ahora mismo:\n→ [Acción rápida #1]\n→ [Acción rápida #2]\n\nEn los próximos días te voy a compartir tips para que ${objetivo.toLowerCase()}.\n\nCualquier pregunta, responde este email — leo todo.\n\n[Tu nombre]` },
+        { num: 2, nombre: 'Quick Win', timing: 'Día 1-2',
+          asunto: `El truco que el 80% no usa en ${producto}`,
+          preview: 'Pruébalo en 5 minutos.',
+          cuerpo: `Hola [Nombre],\n\nUn consejo rápido que marca la diferencia:\n\n[Tip específico de alto valor]\n\n¿Ya lo probaste? Cuéntame cómo te fue.\n\n[Tu nombre]` },
+        { num: 3, nombre: 'Historia / Por qué existimos', timing: 'Día 3-4',
+          asunto: 'Por qué creamos esto (historia real)',
+          preview: 'El problema que nos obsesionó...',
+          cuerpo: `Hola [Nombre],\n\nDetrás de ${producto} hay una historia.\n\nAntes de crearlo, ${audiencia} como tú enfrentaban [problema]. Nosotros también.\n\nFue frustrante hasta que encontramos la solución.\n\nHoy ${producto} existe para que nunca vuelvas a pasar por eso.\n\n[Tu nombre]` },
+        { num: 4, nombre: 'Social Proof', timing: 'Día 5-6',
+          asunto: 'Cómo [Cliente] logró [resultado] con ${producto}',
+          preview: 'Un resultado que inspirará.',
+          cuerpo: `Hola [Nombre],\n\n"[Testimonio real de cliente]" — [Nombre, Empresa]\n\n[Cliente] tenía el mismo reto que tú.\n\nEsto es lo que hizo diferente:\n→ [Paso 1]\n→ [Paso 2]\n\n¿Quieres el mismo resultado? [CTA]\n\n[Tu nombre]` },
+        { num: 5, nombre: 'Conversión / Oferta', timing: 'Día 12-14',
+          asunto: `[Nombre], esto es solo para ti`,
+          preview: 'Una oferta especial por tiempo limitado.',
+          cuerpo: `Hola [Nombre],\n\nLlevamos [X días] juntos y quiero reconocer eso.\n\nPor eso tengo algo especial para ti: [oferta/descuento/bono]\n\nPero solo por [X días].\n\n→ [CTA: Aprovecha ahora]\n\n[Tu nombre]` },
+      ],
+      nurture: [
+        { num: 1, nombre: 'Entrega el Lead Magnet', timing: 'Inmediato', asunto: 'Tu [recurso] está aquí', preview: 'Lo prometido.', cuerpo: `Hola,\n\nAquí tienes el recurso que pediste: [Link]\n\nEn los próximos días te voy a compartir más sobre [tema relacionado].\n\n[Tu nombre]` },
+        { num: 2, nombre: 'Deep dive del problema', timing: 'Día 2-3', asunto: '¿Por qué [problema] es tan difícil de resolver?', preview: 'La respuesta te sorprenderá.', cuerpo: `Hola,\n\nLa razón por la que [problema] persiste no es [mito].\n\nEn realidad es [causa real].\n\nY eso cambia todo.\n\n[Tu nombre]` },
+        { num: 3, nombre: 'Oferta directa', timing: 'Día 19-21', asunto: '[Nombre], una propuesta para ti', preview: 'Sin rodeos.', cuerpo: `Hola,\n\nHe compartido mucho contigo. Hoy te hago una propuesta directa:\n\n${producto} puede ayudarte a ${objetivo.toLowerCase()}.\n\n→ [CTA claro]\n\n[Tu nombre]` },
+      ],
+      reengagement: [
+        { num: 1, nombre: 'Check-in genuino', timing: 'Después de 30 días inactivo', asunto: '¿Sigues ahí, [Nombre]?', preview: 'Solo quiero saber cómo estás.', cuerpo: `Hola [Nombre],\n\nHace un tiempo que no sé de ti.\n\n¿Todo bien? ¿Encontraste lo que buscabas?\n\nEstaré aquí si necesitas algo.\n\n[Tu nombre]` },
+        { num: 2, nombre: 'Recordatorio de valor', timing: 'Día 3-4', asunto: 'Lo nuevo que quizás te perdiste', preview: 'Mejoras que te van a gustar.', cuerpo: `Hola [Nombre],\n\nDesde la última vez que hablamos, ${producto} mejoró mucho.\n\nNuevidades:\n→ [Feature 1]\n→ [Feature 2]\n\n¿Volvemos a empezar?\n\n[Tu nombre]` },
+        { num: 3, nombre: 'Última oportunidad', timing: 'Día 14', asunto: '¿Me quedo o me voy? Tú decides', preview: 'Sin presión.', cuerpo: `Hola [Nombre],\n\nNo quiero enviarte emails si no son útiles para ti.\n\nSi quieres seguir recibiendo [valor], haz click aquí: [Sí, quiero seguir]\n\nSi no, te doy de baja sin problema: [Darme de baja]\n\n[Tu nombre]` },
+      ],
+    };
+
+    const seq = secuencias[emailTipo] || secuencias.bienvenida;
+    const tipoNombre = { bienvenida: '👋 Bienvenida', nurture: '🌱 Nurture', reengagement: '♻️ Re-engagement', onboarding: '🚀 Onboarding', frio: '❄️ Email Frío' };
+
+    let output = `📧 SECUENCIA: ${tipoNombre[emailTipo]}\nProducto: ${producto} | Audiencia: ${audiencia}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    seq.forEach(email => {
+      output += `EMAIL #${email.num}: ${email.nombre}\n`;
+      output += `📅 Envío: ${email.timing}\n`;
+      output += `📌 Asunto: ${email.asunto}\n`;
+      output += `👁 Preview: ${email.preview}\n`;
+      output += `\n${email.cuerpo}\n`;
+      output += '\n────────────────────────────\n\n';
+    });
+
+    output += `💡 BASADO EN: marketingskills/emails\nMétrica objetivo: Tasa de apertura >30%, Clic >3%, Conversión >1%`;
+
+    document.getElementById('email-output').textContent = output;
+    document.getElementById('email-output').classList.remove('loading');
+    updateStat('emails');
+  }
+
+  // ── SOCIAL ──
+  function generarSocial() {
+    const tema = document.getElementById('social-tema').value || 'marketing digital';
+    const objetivo = document.getElementById('social-objetivo').value;
+    const tono = document.getElementById('social-tono').value;
+    const marca = document.getElementById('social-marca').value;
+
+    const configs = {
+      linkedin: { max: '3,000 caracteres', freq: '3-5x/semana', formato: 'Carrusel o texto largo' },
+      twitter:  { max: '280 caracteres', freq: '3-10x/día', formato: 'Thread o hot take' },
+      instagram:{ max: '2,200 caracteres', freq: '1-2 posts/día', formato: 'Reels o carrusel' },
+      tiktok:   { max: '2,200 caracteres', freq: '1-4x/día', formato: 'Video corto (15-60s)' },
+    };
+
+    const cfg = configs[platform];
+    const platName = { linkedin: 'LinkedIn', twitter: 'Twitter/X', instagram: 'Instagram', tiktok: 'TikTok' }[platform];
+
+    const hooks = {
+      educativo: [`¿Sabías que ${tema}? Aquí lo que nadie te dice:`, `${tema} explicado en 60 segundos:`],
+      inspirador: [`${tema} cambió todo para mí. Aquí cómo:`, `Esto fue lo que aprendí sobre ${tema}:`],
+      casual: [`Seré honesto sobre ${tema}...`, `Hot take: ${tema} no es lo que crees`],
+      profesional: [`3 puntos clave sobre ${tema}:`, `Después de analizar ${tema}, llegué a esta conclusión:`],
+      humoristico: [`Me pagaron para decirlo: ${tema} es difícil. (Es broma, casi.)`, `Nadie habla de esto: ${tema}`],
+    };
+
+    const hookList = hooks[tono] || hooks.profesional;
+
+    const output = `📱 POST PARA: ${platName}
+Tema: ${tema}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎣 OPCIÓN A — Hook:
+"${hookList[0]}"
+
+[Párrafo 1: Contexto del problema o situación]
+[Párrafo 2: El insight o lección clave]
+[Párrafo 3: El resultado o takeaway]
+
+→ CTA: [Comparte si te ayudó / Comenta tu experiencia / Link en bio]
+
+#hashtag1 #hashtag2 #hashtag3
+
+────────────────────────────
+
+🎣 OPCIÓN B — Hook:
+"${hookList[1]}"
+
+[Punto 1] ✓
+[Punto 2] ✓
+[Punto 3] ✓
+[Punto 4] ✓
+[Punto 5] ✓
+
+¿Cuál te parece más importante? Comenta abajo 👇
+
+#${tema.replace(/\s+/g,'').toLowerCase()} #marketing #${platName.toLowerCase()}
+
+────────────────────────────
+
+📊 SPECS DE PLATAFORMA (${platName}):
+• Límite: ${cfg.max}
+• Frecuencia recomendada: ${cfg.freq}
+• Formato estrella: ${cfg.formato}
+• Objetivo seleccionado: ${objetivo}
+
+${marca ? `\n🏷 CONTEXTO DE MARCA:\n${marca}` : ''}
+
+💡 BASADO EN: marketingskills/social
+Tip: En ${platName}, las primeras 2 líneas determinan si alguien hace clic en "ver más". Haz que cuenten.`;
+
+    document.getElementById('social-output').textContent = output;
+    document.getElementById('social-output').classList.remove('loading');
+    updateStat('content');
+  }
+
+  // ── PRICING ──
+  function generarPricing() {
+    const tipo = document.getElementById('p-tipo').value;
+    const mercado = document.getElementById('p-mercado').value;
+    const producto = document.getElementById('p-producto').value || 'tu producto';
+    const precioActual = document.getElementById('p-precio-actual').value;
+    const competidor = document.getElementById('p-competidor').value || 'alternativas del mercado';
+    const valor = document.getElementById('p-valor').value || 'un resultado tangible';
+
+    const precios = {
+      smb: [29, 79, 199],
+      midmarket: [99, 299, 799],
+      enterprise: [499, 1499, 4999],
+      consumidor: [9, 29, 79],
+    };
+
+    const ps = precios[mercado] || precios.smb;
+
+    // Show tiers
+    document.getElementById('pricing-tiers-output').style.display = 'block';
+    document.getElementById('pricing-tiers').innerHTML = `
+      <div class="tier">
+        <div class="tier-name">Starter</div>
+        <div class="tier-price">$${ps[0]}</div>
+        <div class="tier-period">/mes — ideal para comenzar</div>
+        <ul class="tier-features">
+          <li>Funcionalidades core</li>
+          <li>Hasta 3 usuarios</li>
+          <li>Soporte por email</li>
+          <li>1,000 operaciones/mes</li>
+        </ul>
+      </div>
+      <div class="tier recommended">
+        <div class="tier-badge">RECOMENDADO</div>
+        <div class="tier-name">Pro</div>
+        <div class="tier-price">$${ps[1]}</div>
+        <div class="tier-period">/mes — el más popular</div>
+        <ul class="tier-features">
+          <li>Todo de Starter +</li>
+          <li>Hasta 15 usuarios</li>
+          <li>Soporte prioritario</li>
+          <li>10,000 operaciones/mes</li>
+          <li>Integraciones avanzadas</li>
+          <li>Analytics y reportes</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tier-name">Enterprise</div>
+        <div class="tier-price">$${ps[2]}</div>
+        <div class="tier-period">/mes — máximo valor</div>
+        <ul class="tier-features">
+          <li>Todo de Pro +</li>
+          <li>Usuarios ilimitados</li>
+          <li>Dedicated account manager</li>
+          <li>Operaciones ilimitadas</li>
+          <li>SSO / SAML</li>
+          <li>SLA garantizado</li>
+        </ul>
+      </div>
+    `;
+
+    const output = `📊 ESTRATEGIA DE PRECIOS — ${producto.toUpperCase()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 RESUMEN EJECUTIVO:
+• Mercado: ${mercado} | Tipo: ${tipo}
+• Rango recomendado: $${ps[0]} – $${ps[2]}/mes
+• Valor principal entregado: ${valor}
+• Referencia: ${competidor}
+${precioActual ? `• Precio actual: ${precioActual}` : ''}
+
+📐 MÉTRICA DE VALOR RECOMENDADA:
+Para ${tipo} en mercado ${mercado}, la métrica más efectiva es:
+${tipo === 'saas' ? '→ Por usuario/mes (escala con el equipo)' : '→ Por proyecto o retainer mensual'}
+
+Justificación: Esta métrica crece con el cliente — alineando el precio con el valor recibido.
+
+💡 PSICOLOGÍA DE PRECIOS (de marketingskills/pricing):
+✓ Tier central ($${ps[1]}) es el "decoy" — hace parecer razonable al Pro
+✓ Muestra el precio más alto primero para anclar la percepción
+✓ "Recomendado" en el tier central aumenta conversión hasta 40%
+✓ Descuento anual de 17-20% mejora LTV y reduce churn
+✓ Usa precios redondeados para premium, charm pricing para SMB
+
+📈 SEÑALES PARA SUBIR PRECIO:
+• Conversión >40% (precio muy bajo)
+• Clientes dicen "es muy barato"
+• Churn <3% mensual
+• Competidor sube precios
+
+⚠️ RIESGOS A EVITAR:
+• No diferencias los tiers suficientemente → clientes eligen el más barato siempre
+• Demasiados tiers → parálisis de decisión
+• Precio basado en costo, no en valor → dejas dinero sobre la mesa
+
+🔢 ESTRATEGIA DE DESCUENTO ANUAL:
+• Mensual: $${ps[1]}/mes
+• Anual: $${Math.round(ps[1] * 10)}/año (equivale a $${Math.round(ps[1] * 10/12)}/mes — ahorras 2 meses)`;
+
+    document.getElementById('pricing-output').textContent = output;
+    document.getElementById('pricing-output').classList.remove('loading');
+    updateStat('content');
+  }
+
+  // ── CONTENT STRATEGY ──
+  function generarContenido() {
+    const empresa = document.getElementById('cs-empresa').value || 'tu empresa';
+    const cliente = document.getElementById('cs-cliente').value || 'tu cliente ideal';
+    const objetivo = document.getElementById('cs-objetivo').value;
+    const preguntas = document.getElementById('cs-preguntas').value;
+
+    const objs = {
+      trafico: 'Tráfico orgánico (SEO)',
+      leads: 'Generación de leads',
+      awareness: 'Brand awareness',
+      liderazgo: 'Liderazgo de pensamiento',
+    };
+
+    const output = `📝 PLAN DE CONTENIDO — ${empresa.toUpperCase()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 Objetivo: ${objs[objetivo]}
+👥 Audiencia: ${cliente}
+
+🏛 PILARES DE CONTENIDO (3-5 temas core):
+
+Pilar 1 — EDUCACIONAL
+"Cómo [resolver el problema principal de ${cliente}]"
+→ Artículos de guía, tutoriales, explicaciones
+
+Pilar 2 — PRUEBA SOCIAL
+"Historias de éxito y casos de estudio"
+→ Antes/después, resultados reales, testimonios
+
+Pilar 3 — OPINIÓN / LIDERAZGO
+"Perspectivas únicas sobre la industria"
+→ Hot takes, tendencias, predicciones
+
+Pilar 4 — PRODUCTO / SOLUCIÓN
+"Cómo [empresa] resuelve [problema]"
+→ Features, demos, comparativas
+
+Pilar 5 — COMUNIDAD
+"Preguntas, encuestas, conversaciones"
+→ Engagement y feedback
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 CALENDARIO MENSUAL (sugerido):
+
+Semana 1: [Pilar 1] Artículo educacional largo + 3 posts sociales derivados
+Semana 2: [Pilar 3] Opinión/tendencia + Newsletter + Thread en Twitter
+Semana 3: [Pilar 2] Caso de éxito + LinkedIn carousel + Email a lista
+Semana 4: [Pilar 4] Contenido de producto + Video corto + Comparativa
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${preguntas ? `❓ IDEAS DE CONTENIDO BASADAS EN TUS PREGUNTAS:\n${preguntas.split('\n').filter(q=>q.trim()).map((q,i) => `${i+1}. "${q.trim()}" → Artículo: "La respuesta definitiva a [${q.trim()}]"`).join('\n')}\n\n` : ''}
+
+🔍 TIPOS DE CONTENIDO POR OBJETIVO:
+${objetivo === 'trafico' ? `
+• Prioridad: artículos SEO (1,500-3,000 palabras)
+• Keywords: enfócate en long-tail con intención de compra
+• Estructura: problema → solución → CTA
+• Actualiza el top 10% de artículos existentes antes de crear nuevos` : ''}
+${objetivo === 'leads' ? `
+• Prioridad: lead magnets (guías, plantillas, calculadoras)
+• Landing pages optimizadas por cada lead magnet
+• Email nurture sequence para cada descarga
+• Gated content estratégico (pide solo email + nombre)` : ''}
+${objetivo === 'awareness' ? `
+• Prioridad: contenido shareable y de opinión
+• Formatos: carruseles, threads, videos cortos
+• Consistencia > viralidad — publica siempre
+• Colabora con creadores de tu nicho` : ''}
+${objetivo === 'liderazgo' ? `
+• Prioridad: investigación original + datos propios
+• Formatos: reportes, estudios, predicciones anuales
+• Distribución: LinkedIn + newsletter + podcasts como invitado
+• Cita fuentes, muestra metodología, sé específico` : ''}
+
+💡 BASADO EN: marketingskills/content-strategy
+Principio: Todo el contenido debe ser "searchable" (SEO) o "shareable" (viral) — idealmente ambos.`;
+
+    document.getElementById('content-output').textContent = output;
+    document.getElementById('content-output').classList.remove('loading');
+    updateStat('content');
+  }
+
+  // ── ADS ──
+  function generarAds() {
+    const producto = document.getElementById('ad-producto').value || 'tu producto';
+    const audiencia = document.getElementById('ad-audiencia').value || 'tu audiencia';
+    const objetivo = document.getElementById('ad-objetivo').value;
+    const oferta = document.getElementById('ad-oferta').value || 'Prueba gratis';
+    const diferenciador = document.getElementById('ad-diferenciador').value || 'la mejor opción';
+    const objeciones = document.getElementById('ad-objeciones').value;
+
+    const platName = { google: 'Google Ads', meta: 'Meta Ads (Facebook/Instagram)', 'linkedin-ads': 'LinkedIn Ads' }[adPlatform];
+
+    const output = `🎯 CREATIVOS PARA: ${platName}
+Producto: ${producto}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${adPlatform === 'google' ? `🔍 GOOGLE ADS — Anuncio de Búsqueda (RSA)
+
+TITULOS (máx. 30 caracteres c/u — crea 10+):
+1. ${producto.slice(0,25)} — Prueba Ya
+2. ${oferta} — Empieza Hoy
+3. ${diferenciador.slice(0,28)}
+4. Para ${audiencia.slice(0,22)}
+5. Sin Comisiones — Sin Trampa
+6. Líder del Mercado — Confiable
+7. [Número] de clientes satisfechos
+8. Resultados en [X días]
+9. Gratis vs. ${producto.slice(0,20)}
+10. El preferido por expertos
+
+DESCRIPCIONES (máx. 90 caracteres c/u — crea 4+):
+1. "${diferenciador}. ${oferta}. Sin compromisos."
+2. "Más de [X] empresas ya confían en nosotros. Únete hoy."
+3. "${producto} — la solución que ${audiencia} estaba esperando."
+4. "No pierdas más tiempo. ${oferta} y ve resultados esta semana."` : ''}
+
+${adPlatform === 'meta' ? `📘 META ADS — Facebook / Instagram
+
+TIPO DE ANUNCIO: Imagen estática o carrusel
+
+COPY PRINCIPAL (máx. 125 chars visible):
+"¿Eres ${audiencia}? Descubre cómo ${diferenciador.toLowerCase()}.
+${oferta} — Sin compromiso. ✓"
+
+HEADLINE (máx. 40 chars):
+"${producto} — ${oferta}"
+
+DESCRIPCIÓN (descripción de link, 30 chars):
+"${diferenciador.slice(0,28)}"
+
+VARIANTE HOOK 1 (problema):
+"¿Cansado de [problema]? ${producto} lo resuelve.
+${oferta} para ${audiencia}. Empieza ahora →"
+
+VARIANTE HOOK 2 (social proof):
+"[X] personas como tú ya usan ${producto}.
+Aquí por qué lo eligieron → ${oferta}"
+
+VARIANTE HOOK 3 (curiosidad):
+"Lo que ${audiencia} no sabe sobre [resultado posible]...
+${producto} te lo muestra. ${oferta}"` : ''}
+
+${adPlatform === 'linkedin-ads' ? `💼 LINKEDIN ADS — Sponsored Content
+
+INTRO TEXT (máx. 600 chars):
+"${audiencia}: ¿Siguen usando [método antiguo]?
+
+Con ${producto} puedes ${diferenciador.toLowerCase()}.
+
+✓ [Beneficio 1]
+✓ [Beneficio 2]
+✓ [Beneficio 3]
+
+${oferta} — solo para equipos en crecimiento."
+
+HEADLINE (máx. 70 chars):
+"${producto} — ${diferenciador.slice(0,40)}"
+
+DESCRIPCION (máx. 70 chars):
+"${oferta} para ${audiencia.slice(0,35)}"
+
+FORMATOS RECOMENDADOS para LinkedIn:
+→ Single Image Ad: para awareness y leads
+→ Carousel Ad: para mostrar features o casos de uso
+→ Lead Gen Form: para capturar leads sin salir de LinkedIn` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${objeciones ? `⚠️ MANEJO DE OBJECIONES EN ADS:\n${objeciones.split('\n').filter(o=>o.trim()).map(o => `Objeción: "${o.trim()}" → Contraarma: [añade prueba social / garantía / demo]`).join('\n')}\n\n` : ''}
+
+📐 ESTRUCTURA DE CAMPAÑA RECOMENDADA:
+• Campaña 1: Audiencia fría (awareness) → objetivo ${objetivo}
+• Campaña 2: Retargeting visitantes → CTA más directo
+• Campaña 3: Lookalike de clientes existentes → oferta de conversión
+• Presupuesto sugerido: 70% frío / 30% retargeting
+
+💡 BASADO EN: marketingskills/ad-creative
+Tip: Prueba siempre 3+ variantes de hook. El 80% del resultado viene del creativo, no del targeting.`;
+
+    document.getElementById('ads-output').textContent = output;
+    document.getElementById('ads-output').classList.remove('loading');
+    updateStat('content');
+  }
+</script>
+</body>
+</html>
