@@ -1,1468 +1,1015 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marketing Suite — Cotizador + IA</title>
-  <style>
-    :root {
-      --bg: #0f0f13;
-      --surface: #1a1a23;
-      --surface2: #22222e;
-      --border: #2e2e3e;
-      --accent: #6c63ff;
-      --accent2: #a78bfa;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --green: #10b981;
-      --yellow: #f59e0b;
-      --red: #ef4444;
-      --radius: 12px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#dd9933">
+    <meta name="description" content="Cotizador oficial DINAMO - Financia tu motocicleta">
+    <title>Cotizador DINAMO | Financia tu Moto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            overflow: hidden;
+        }
 
-    /* ── Sidebar ── */
-    .sidebar {
-      width: 240px;
-      min-height: 100vh;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      padding: 24px 16px;
-      gap: 4px;
-      position: fixed;
-      top: 0; left: 0;
-    }
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: max(12px, env(safe-area-inset-top));
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            padding-left: max(12px, env(safe-area-inset-left));
+            padding-right: max(12px, env(safe-area-inset-right));
+            gap: 12px;
+        }
 
-    .logo {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--accent2);
-      margin-bottom: 24px;
-      padding-left: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .header {
+            background: linear-gradient(135deg, #dd9933 0%, #c97d1f 100%);
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(221, 153, 51, 0.3);
+        }
 
-    .logo span { font-size: 1.4rem; }
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #dd9933;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
 
-    .nav-section {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--muted);
-      padding: 12px 8px 4px;
-    }
+        .header-text h1 {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
 
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.875rem;
-      color: var(--muted);
-      transition: all .2s;
-      border: none;
-      background: transparent;
-      width: 100%;
-      text-align: left;
-    }
+        .header-text p {
+            color: rgba(255,255,255,0.85);
+            font-size: 11px;
+            font-weight: 600;
+        }
 
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: var(--accent); color: #fff; }
-    .nav-item .icon { font-size: 1.1rem; width: 20px; text-align: center; }
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
-    /* ── Main ── */
-    .main {
-      margin-left: 240px;
-      flex: 1;
-      padding: 32px;
-      max-width: calc(100vw - 240px);
-    }
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    .page { display: none; }
-    .page.active { display: block; }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
-    h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; color: var(--text); }
-    .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+        .section-title span {
+            font-size: 16px;
+        }
 
-    /* ── Cards ── */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #333;
+        }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      cursor: pointer;
-      transition: all .2s;
-    }
+        select:focus {
+            outline: none;
+            border-color: #dd9933;
+            box-shadow: 0 0 0 3px rgba(221, 153, 51, 0.1);
+        }
 
-    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .buttons-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+            gap: 6px;
+        }
 
-    .card-icon { font-size: 2rem; margin-bottom: 12px; }
-    .card-title { font-weight: 600; margin-bottom: 6px; }
-    .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+        .btn {
+            padding: 9px 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            transition: all 0.25s;
+            text-align: center;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-    /* ── Forms & Inputs ── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
+        .btn:active {
+            transform: scale(0.95);
+        }
 
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.full { grid-column: 1 / -1; }
+        .btn.active {
+            background: linear-gradient(135deg, #dd9933 0%, #c97d1f 100%);
+            color: white;
+            border-color: #dd9933;
+            box-shadow: 0 3px 10px rgba(221, 153, 51, 0.3);
+        }
 
-    label { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+        .moto-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
 
-    input, select, textarea {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 0.875rem;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color .2s;
-      font-family: inherit;
-    }
+        .moto-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            background: white;
+            border-radius: 6px;
+            padding: 4px;
+        }
 
-    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-    textarea { resize: vertical; min-height: 90px; }
+        .moto-info {
+            flex: 1;
+        }
 
-    select option { background: var(--surface2); }
+        .moto-info-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
 
-    /* ── Buttons ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: none;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .2s;
-    }
+        .moto-info-desc {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.3;
+        }
 
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #5a52d5; }
-    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { border-color: var(--accent); }
-    .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+        .cotizacion {
+            margin-top: 8px;
+            padding: 14px;
+            background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+            border-radius: 10px;
+            border-left: 4px solid #dd9933;
+        }
 
-    /* ── Output box ── */
-    .output-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-top: 24px;
-      white-space: pre-wrap;
-      font-size: 0.875rem;
-      line-height: 1.7;
-      min-height: 120px;
-      color: var(--text);
-    }
+        .cotizacion h2 {
+            font-size: 14px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    .output-box.loading { color: var(--muted); font-style: italic; }
+        .cotizacion-grid {
+            display: grid;
+            gap: 8px;
+        }
 
-    /* ── Quote table ── */
-    .quote-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-    }
+        .cotizacion-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .quote-table th, .quote-table td {
-      padding: 10px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.875rem;
-    }
+        .cotizacion-label {
+            color: #666;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
-    .quote-table th { color: var(--muted); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; }
-    .quote-table td:last-child { text-align: right; font-weight: 600; }
-    .quote-total td { font-size: 1.1rem; color: var(--accent2); }
+        .cotizacion-valor {
+            color: #dd9933;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-    /* ── Tags ── */
-    .tag {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
+        .cotizacion-total {
+            background: linear-gradient(135deg, #dd9933 0%, #c97d1f 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            box-shadow: 0 3px 10px rgba(221, 153, 51, 0.3);
+        }
 
-    .tag-purple { background: rgba(108,99,255,.15); color: var(--accent2); }
-    .tag-green { background: rgba(16,185,129,.15); color: var(--green); }
+        .cotizacion-total-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-    /* ── Skill chips ── */
-    .skill-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
+        .cotizacion-total-valor {
+            font-size: 18px;
+            font-weight: 700;
+        }
 
-    .skill-chip {
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all .2s;
-      background: transparent;
-      color: var(--muted);
-    }
+        .cotizacion-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
 
-    .skill-chip:hover, .skill-chip.active { border-color: var(--accent); color: var(--accent2); background: rgba(108,99,255,.1); }
+        .btn-action {
+            padding: 11px 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
 
-    /* ── Dashboard stats ── */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
-    }
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366 0%, #1da851 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(37, 211, 102, 0.2);
+        }
 
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-    }
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
 
-    .stat-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
-    .stat-value { font-size: 1.8rem; font-weight: 700; }
-    .stat-change { font-size: 0.75rem; margin-top: 4px; }
-    .up { color: var(--green); }
-    .down { color: var(--red); }
+        .btn-email {
+            background: linear-gradient(135deg, #dd9933 0%, #c97d1f 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(221, 153, 51, 0.2);
+        }
 
-    /* ── Pricing tiers ── */
-    .tiers {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin: 24px 0;
-    }
+        .btn-email:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(221, 153, 51, 0.3);
+        }
 
-    .tier {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      position: relative;
-    }
+        .btn-action:active {
+            transform: translateY(0);
+        }
 
-    .tier.recommended { border-color: var(--accent); }
+        .hidden {
+            display: none;
+        }
 
-    .tier-badge {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 12px;
-      border-radius: 20px;
-    }
+        .whatsapp-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #25d366 0%, #1da851 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
 
-    .tier-name { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
-    .tier-price { font-size: 2rem; font-weight: 700; color: var(--accent2); margin-bottom: 4px; }
-    .tier-period { font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
-    .tier-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .tier-features li { font-size: 0.83rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-    .tier-features li::before { content: "✓"; color: var(--green); font-weight: 700; }
+        .whatsapp-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+        }
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .whatsapp-button:active {
+            transform: scale(0.95);
+        }
 
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; max-width: 100vw; padding: 16px; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .tiers { grid-template-columns: 1fr; }
-      .form-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+        .whatsapp-modal {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 40px rgba(0,0,0,0.16);
+            width: 360px;
+            max-width: 90vw;
+            overflow: hidden;
+            z-index: 999;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .whatsapp-header {
+            background: linear-gradient(135deg, #25d366 0%, #1da851 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .whatsapp-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .whatsapp-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+        }
+
+        .whatsapp-content {
+            padding: 16px;
+        }
+
+        .whatsapp-message {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .whatsapp-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .whatsapp-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .whatsapp-input::placeholder {
+            color: #999;
+        }
+
+        .whatsapp-input:focus {
+            outline: none;
+            border-color: #25d366;
+            box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.1);
+        }
+
+        .whatsapp-send {
+            padding: 11px;
+            background: linear-gradient(135deg, #25d366 0%, #1da851 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .whatsapp-send:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-send:active {
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dd9933;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding-top: 6px;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            .header {
+                padding: 12px;
+            }
+
+            .header-logo {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .header-text h1 {
+                font-size: 16px;
+            }
+
+            .header-text p {
+                font-size: 10px;
+            }
+
+            .content {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .buttons-group {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 5px;
+            }
+
+            .btn {
+                font-size: 10px;
+                padding: 8px 8px;
+            }
+
+            .moto-preview img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .moto-info-title {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="app-container">
+        <div class="header">
+            <div class="header-logo">🏍</div>
+            <div class="header-text">
+                <h1>DINAMO</h1>
+                <p>Cotizador Oficial | Financia tu Moto</p>
+            </div>
+        </div>
 
-<!-- ── SIDEBAR ── -->
-<nav class="sidebar">
-  <div class="logo"><span>🚀</span> MarketingAI</div>
+        <div class="content">
+            <!-- Selección de modelo -->
+            <div class="section">
+                <div class="section-title">
+                    <span>🏍️</span>
+                    <span>Modelo</span>
+                </div>
+                <select id="modeloSelect">
+                    <option value="">-- Selecciona una motocicleta --</option>
+                </select>
+                <div id="motoPreview"></div>
+            </div>
 
-  <div class="nav-section">Principal</div>
-  <button class="nav-item active" onclick="showPage('dashboard')">
-    <span class="icon">🏠</span> Dashboard
-  </button>
-  <button class="nav-item" onclick="showPage('cotizador')">
-    <span class="icon">💰</span> Cotizador
-  </button>
+            <!-- Selección de crédito -->
+            <div class="section">
+                <div class="section-title">
+                    <span>💳</span>
+                    <span>Tipo de Financiamiento</span>
+                </div>
+                <div class="buttons-group" id="creditoGroup">
+                    <button class="btn" data-credito="CREDINAMO">CREDINAMO</button>
+                    <button class="btn" data-credito="MOTONOMINA">MOTONOMINA</button>
+                    <button class="btn" data-credito="MOTOXPRESS">MOTOXPRESS</button>
+                    <button class="btn" data-credito="MSI">MSI (0%)</button>
+                </div>
+            </div>
 
-  <div class="nav-section">Marketing</div>
-  <button class="nav-item" onclick="showPage('copywriting')">
-    <span class="icon">✍️</span> Copywriting
-  </button>
-  <button class="nav-item" onclick="showPage('emails')">
-    <span class="icon">📧</span> Emails
-  </button>
-  <button class="nav-item" onclick="showPage('social')">
-    <span class="icon">📱</span> Redes Sociales
-  </button>
-  <button class="nav-item" onclick="showPage('pricing')">
-    <span class="icon">📊</span> Estrategia de Precios
-  </button>
+            <!-- Selección de enganche -->
+            <div class="section" id="engancheSection">
+                <div class="section-title">
+                    <span>💰</span>
+                    <span>Enganche</span>
+                </div>
+                <div class="buttons-group" id="engancheGroup"></div>
+            </div>
 
-  <div class="nav-section">Contenido</div>
-  <button class="nav-item" onclick="showPage('content')">
-    <span class="icon">📝</span> Estrategia de Contenido
-  </button>
-  <button class="nav-item" onclick="showPage('ads')">
-    <span class="icon">🎯</span> Anuncios (Ads)
-  </button>
-</nav>
+            <!-- Selección de plazo -->
+            <div class="section" id="plazoSection">
+                <div class="section-title">
+                    <span>📅</span>
+                    <span>Plazo (Quincenas)</span>
+                </div>
+                <div class="buttons-group" id="plazoGroup"></div>
+            </div>
 
-<!-- ── MAIN ── -->
-<main class="main">
-
-  <!-- ── DASHBOARD ── -->
-  <section id="dashboard" class="page active">
-    <h1>Dashboard</h1>
-    <p class="subtitle">Tu suite de marketing con IA — cotiza, crea y convierte.</p>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Cotizaciones generadas</div>
-        <div class="stat-value" id="stat-quotes">0</div>
-        <div class="stat-change up">↑ listas para enviar</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Contenidos creados</div>
-        <div class="stat-value" id="stat-content">0</div>
-        <div class="stat-change up">↑ con IA</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Emails generados</div>
-        <div class="stat-value" id="stat-emails">0</div>
-        <div class="stat-change up">↑ listos para enviar</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Skills disponibles</div>
-        <div class="stat-value">42</div>
-        <div class="stat-change up">↑ de marketingskills</div>
-      </div>
+            <!-- Cotización -->
+            <div id="cotizacionContainer"></div>
+        </div>
     </div>
 
-    <h2>¿Qué quieres hacer hoy?</h2>
-    <div class="cards">
-      <div class="card" onclick="showPage('cotizador')">
-        <div class="card-icon">💰</div>
-        <div class="card-title">Cotizador Inteligente</div>
-        <div class="card-desc">Genera propuestas y cotizaciones profesionales con precios dinámicos y estrategia incluida.</div>
-      </div>
-      <div class="card" onclick="showPage('copywriting')">
-        <div class="card-icon">✍️</div>
-        <div class="card-title">Copywriting</div>
-        <div class="card-desc">Escribe copy de alto impacto para páginas web, landing pages y más, siguiendo mejores prácticas.</div>
-      </div>
-      <div class="card" onclick="showPage('emails')">
-        <div class="card-icon">📧</div>
-        <div class="card-title">Secuencias de Email</div>
-        <div class="card-desc">Diseña campañas de email: bienvenida, nurture, re-engagement y más.</div>
-      </div>
-      <div class="card" onclick="showPage('social')">
-        <div class="card-icon">📱</div>
-        <div class="card-title">Redes Sociales</div>
-        <div class="card-desc">Crea posts para LinkedIn, Twitter/X, Instagram y TikTok con estrategia de plataforma.</div>
-      </div>
-      <div class="card" onclick="showPage('pricing')">
-        <div class="card-icon">📊</div>
-        <div class="card-title">Estrategia de Precios</div>
-        <div class="card-desc">Define tus tiers, métricas de valor y psicología de precios para maximizar ingresos.</div>
-      </div>
-      <div class="card" onclick="showPage('ads')">
-        <div class="card-icon">🎯</div>
-        <div class="card-title">Anuncios (Ads)</div>
-        <div class="card-desc">Crea creativos y copy para Google Ads, Meta Ads y más con estructura probada.</div>
-      </div>
-    </div>
-  </section>
+    <!-- WhatsApp Button -->
+    <button class="whatsapp-button" id="whatsappBtn" title="Contactar por WhatsApp">💬</button>
 
-  <!-- ── COTIZADOR ── -->
-  <section id="cotizador" class="page">
-    <h1>💰 Cotizador Inteligente</h1>
-    <p class="subtitle">Genera cotizaciones profesionales con precios estratégicos.</p>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Nombre del cliente</label>
-        <input type="text" id="q-cliente" placeholder="Ej. Empresa ABC" />
-      </div>
-      <div class="form-group">
-        <label>Tipo de proyecto</label>
-        <select id="q-tipo">
-          <option value="">Selecciona...</option>
-          <option value="web">Sitio Web</option>
-          <option value="marketing">Campaña de Marketing</option>
-          <option value="seo">SEO</option>
-          <option value="ads">Publicidad Pagada</option>
-          <option value="contenido">Estrategia de Contenido</option>
-          <option value="branding">Branding</option>
-          <option value="ecommerce">E-commerce</option>
-          <option value="app">Aplicación / App</option>
-          <option value="consultoria">Consultoría</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Presupuesto estimado del cliente</label>
-        <select id="q-presupuesto">
-          <option value="">Selecciona...</option>
-          <option value="bajo">Bajo (< $500)</option>
-          <option value="medio">Medio ($500 – $2,000)</option>
-          <option value="alto">Alto ($2,000 – $10,000)</option>
-          <option value="enterprise">Enterprise ($10,000+)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Plazo de entrega</label>
-        <select id="q-plazo">
-          <option value="">Selecciona...</option>
-          <option value="urgente">Urgente (1-2 semanas)</option>
-          <option value="normal">Normal (1 mes)</option>
-          <option value="relajado">Relajado (2-3 meses)</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Descripción del proyecto</label>
-        <textarea id="q-descripcion" placeholder="Describe qué necesita el cliente, objetivos, alcance..."></textarea>
-      </div>
+    <!-- WhatsApp Modal -->
+    <div class="whatsapp-modal hidden" id="whatsappModal">
+        <div class="whatsapp-header">
+            <h3>💬 Contacta con DINAMO</h3>
+            <button class="whatsapp-close" id="whatsappClose">✕</button>
+        </div>
+        <div class="whatsapp-content">
+            <p class="whatsapp-message">¿Tienes preguntas sobre tu cotización? Contacta con nuestros asesores por WhatsApp</p>
+            <div class="whatsapp-form">
+                <input type="text" class="whatsapp-input" id="whatsappName" placeholder="Tu nombre">
+                <input type="email" class="whatsapp-input" id="whatsappEmail" placeholder="Tu correo (opcional)">
+                <textarea class="whatsapp-input" id="whatsappMessage" placeholder="Tu mensaje..." rows="3" style="resize: none;"></textarea>
+                <button class="whatsapp-send" id="whatsappSendBtn">Enviar por WhatsApp</button>
+            </div>
+        </div>
     </div>
 
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="generarCotizacion()">⚡ Generar Cotización</button>
-      <button class="btn btn-secondary" onclick="limpiarCotizacion()">🗑 Limpiar</button>
-    </div>
-
-    <div id="cotizacion-output" style="display:none;margin-top:24px;">
-      <h2>Propuesta Generada</h2>
-      <table class="quote-table">
-        <thead>
-          <tr>
-            <th>Servicio</th>
-            <th>Descripción</th>
-            <th>Precio</th>
-          </tr>
-        </thead>
-        <tbody id="quote-items"></tbody>
-        <tfoot>
-          <tr class="quote-total">
-            <td colspan="2"><strong>Total estimado</strong></td>
-            <td id="quote-total">$0</td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <div class="output-box" id="quote-strategy"></div>
-
-      <div style="margin-top:16px;display:flex;gap:12px;">
-        <button class="btn btn-primary btn-sm" onclick="exportarCotizacion()">📄 Exportar PDF</button>
-        <button class="btn btn-secondary btn-sm" onclick="copiarCotizacion()">📋 Copiar texto</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── COPYWRITING ── -->
-  <section id="copywriting" class="page">
-    <h1>✍️ Copywriting con IA</h1>
-    <p class="subtitle">Copy que convierte — headlines, páginas, CTAs y más.</p>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Tipo de página</label>
-        <select id="copy-tipo">
-          <option value="homepage">Homepage</option>
-          <option value="landing">Landing Page</option>
-          <option value="pricing">Página de Precios</option>
-          <option value="feature">Página de Características</option>
-          <option value="about">Página Sobre Nosotros</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Tono de marca</label>
-        <select id="copy-tono">
-          <option value="profesional">Profesional</option>
-          <option value="casual">Casual / Conversacional</option>
-          <option value="técnico">Técnico</option>
-          <option value="inspirador">Inspirador</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Producto / Servicio</label>
-        <input type="text" id="copy-producto" placeholder="Ej. Software de gestión de proyectos para equipos remotos" />
-      </div>
-      <div class="form-group">
-        <label>Audiencia objetivo</label>
-        <input type="text" id="copy-audiencia" placeholder="Ej. Startups B2B con 10-50 empleados" />
-      </div>
-      <div class="form-group">
-        <label>Principal beneficio / propuesta de valor</label>
-        <input type="text" id="copy-valor" placeholder="Ej. Reduce el tiempo de reportes de 4h a 15min" />
-      </div>
-      <div class="form-group full">
-        <label>Objeciones comunes</label>
-        <textarea id="copy-objeciones" placeholder="¿Qué dudas tiene tu cliente antes de comprar?"></textarea>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generarCopy()">✨ Generar Copy</button>
-
-    <div class="output-box loading" id="copy-output" style="margin-top:24px;">
-      Tu copy aparecerá aquí...
-    </div>
-    <div style="margin-top:12px;display:flex;gap:12px;">
-      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('copy-output')">📋 Copiar</button>
-    </div>
-  </section>
-
-  <!-- ── EMAILS ── -->
-  <section id="emails" class="page">
-    <h1>📧 Generador de Emails</h1>
-    <p class="subtitle">Secuencias de email que nutren, retienen y convierten.</p>
-
-    <div class="skill-chips">
-      <button class="skill-chip active" onclick="setEmailTipo(this,'bienvenida')">👋 Bienvenida</button>
-      <button class="skill-chip" onclick="setEmailTipo(this,'nurture')">🌱 Nurture / Leads</button>
-      <button class="skill-chip" onclick="setEmailTipo(this,'reengagement')">♻️ Re-engagement</button>
-      <button class="skill-chip" onclick="setEmailTipo(this,'onboarding')">🚀 Onboarding</button>
-      <button class="skill-chip" onclick="setEmailTipo(this,'frio')">❄️ Email Frío</button>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Producto / Servicio</label>
-        <input type="text" id="email-producto" placeholder="Ej. Plataforma de automatización de marketing" />
-      </div>
-      <div class="form-group">
-        <label>Audiencia / Suscriptor</label>
-        <input type="text" id="email-audiencia" placeholder="Ej. Dueños de pequeñas empresas" />
-      </div>
-      <div class="form-group">
-        <label>Objetivo principal</label>
-        <input type="text" id="email-objetivo" placeholder="Ej. Convertir a plan de pago" />
-      </div>
-      <div class="form-group full">
-        <label>Contexto adicional</label>
-        <textarea id="email-contexto" placeholder="¿Qué sabe ya el suscriptor? ¿Qué problema tiene?"></textarea>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generarEmail()">📨 Generar Secuencia de Email</button>
-
-    <div class="output-box loading" id="email-output" style="margin-top:24px;">
-      Tu secuencia de emails aparecerá aquí...
-    </div>
-    <div style="margin-top:12px;">
-      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('email-output')">📋 Copiar</button>
-    </div>
-  </section>
-
-  <!-- ── SOCIAL ── -->
-  <section id="social" class="page">
-    <h1>📱 Contenido para Redes Sociales</h1>
-    <p class="subtitle">Posts que generan engagement — con estrategia de plataforma incluida.</p>
-
-    <div class="skill-chips">
-      <button class="skill-chip active" onclick="setPlatform(this,'linkedin')">💼 LinkedIn</button>
-      <button class="skill-chip" onclick="setPlatform(this,'twitter')">🐦 Twitter/X</button>
-      <button class="skill-chip" onclick="setPlatform(this,'instagram')">📸 Instagram</button>
-      <button class="skill-chip" onclick="setPlatform(this,'tiktok')">🎵 TikTok</button>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Tema / Idea del post</label>
-        <input type="text" id="social-tema" placeholder="Ej. 5 errores que cometen los emprendedores al contratar" />
-      </div>
-      <div class="form-group">
-        <label>Objetivo</label>
-        <select id="social-objetivo">
-          <option value="awareness">Brand awareness</option>
-          <option value="engagement">Engagement / Comunidad</option>
-          <option value="leads">Generar leads</option>
-          <option value="trafico">Tráfico al sitio</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Tono</label>
-        <select id="social-tono">
-          <option value="profesional">Profesional</option>
-          <option value="casual">Casual</option>
-          <option value="educativo">Educativo</option>
-          <option value="inspirador">Inspirador</option>
-          <option value="humoristico">Humorístico</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Contexto de tu marca / negocio</label>
-        <textarea id="social-marca" placeholder="¿Qué haces? ¿A quién ayudas? ¿Cuál es tu diferenciador?"></textarea>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generarSocial()">📲 Generar Post</button>
-
-    <div class="output-box loading" id="social-output" style="margin-top:24px;">
-      Tu post aparecerá aquí...
-    </div>
-    <div style="margin-top:12px;">
-      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('social-output')">📋 Copiar</button>
-    </div>
-  </section>
-
-  <!-- ── PRICING ── -->
-  <section id="pricing" class="page">
-    <h1>📊 Estrategia de Precios</h1>
-    <p class="subtitle">Define tiers, métricas de valor y psicología de precios para maximizar ingresos.</p>
-
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Tipo de negocio</label>
-        <select id="p-tipo">
-          <option value="saas">SaaS</option>
-          <option value="servicio">Servicio / Agencia</option>
-          <option value="ecommerce">E-commerce</option>
-          <option value="marketplace">Marketplace</option>
-          <option value="consultoria">Consultoría</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Mercado objetivo</label>
-        <select id="p-mercado">
-          <option value="smb">SMB (pequeñas empresas)</option>
-          <option value="midmarket">Mid-market</option>
-          <option value="enterprise">Enterprise</option>
-          <option value="consumidor">Consumidor final (B2C)</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Descripción del producto / servicio</label>
-        <input type="text" id="p-producto" placeholder="Ej. Plataforma de gestión de proyectos con IA" />
-      </div>
-      <div class="form-group">
-        <label>Precio actual (si existe)</label>
-        <input type="text" id="p-precio-actual" placeholder="Ej. $29/mes o sin precio aún" />
-      </div>
-      <div class="form-group">
-        <label>Principal competidor</label>
-        <input type="text" id="p-competidor" placeholder="Ej. Asana, Trello, Monday..." />
-      </div>
-      <div class="form-group full">
-        <label>¿Qué valor principal entrega?</label>
-        <textarea id="p-valor" placeholder="¿Qué resultado tangible obtiene el cliente? ¿Cuánto tiempo/dinero le ahorra?"></textarea>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generarPricing()">💡 Generar Estrategia de Precios</button>
-
-    <div id="pricing-tiers-output" style="display:none;margin-top:24px;">
-      <h2>Estructura de Precios Recomendada</h2>
-      <div class="tiers" id="pricing-tiers"></div>
-    </div>
-
-    <div class="output-box loading" id="pricing-output" style="margin-top:16px;">
-      Tu estrategia de precios aparecerá aquí...
-    </div>
-    <div style="margin-top:12px;">
-      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('pricing-output')">📋 Copiar</button>
-    </div>
-  </section>
-
-  <!-- ── CONTENT STRATEGY ── -->
-  <section id="content" class="page">
-    <h1>📝 Estrategia de Contenido</h1>
-    <p class="subtitle">Plan de contenido que atrae, convierte y posiciona tu marca.</p>
-
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>¿Qué hace tu empresa?</label>
-        <input type="text" id="cs-empresa" placeholder="Ej. Ayudamos a restaurantes a automatizar su sistema de reservas" />
-      </div>
-      <div class="form-group">
-        <label>Cliente ideal</label>
-        <input type="text" id="cs-cliente" placeholder="Ej. Dueños de restaurantes medianos en LATAM" />
-      </div>
-      <div class="form-group">
-        <label>Objetivo principal del contenido</label>
-        <select id="cs-objetivo">
-          <option value="trafico">Tráfico orgánico (SEO)</option>
-          <option value="leads">Generación de leads</option>
-          <option value="awareness">Brand awareness</option>
-          <option value="liderazgo">Liderazgo de pensamiento</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Formatos disponibles</label>
-        <select id="cs-formato" multiple style="height:80px;">
-          <option value="blog" selected>Blog / Artículos</option>
-          <option value="video">Video</option>
-          <option value="social">Redes Sociales</option>
-          <option value="newsletter">Newsletter</option>
-          <option value="podcast">Podcast</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Preguntas frecuentes de tus clientes</label>
-        <textarea id="cs-preguntas" placeholder="¿Qué preguntas hacen antes de comprar? ¿Qué les preocupa?"></textarea>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generarContenido()">🗺 Generar Plan de Contenido</button>
-
-    <div class="output-box loading" id="content-output" style="margin-top:24px;">
-      Tu plan de contenido aparecerá aquí...
-    </div>
-    <div style="margin-top:12px;">
-      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('content-output')">📋 Copiar</button>
-    </div>
-  </section>
-
-  <!-- ── ADS ── -->
-  <section id="ads" class="page">
-    <h1>🎯 Creativos de Anuncios</h1>
-    <p class="subtitle">Copy y estructura para anuncios que convierten — Google, Meta y más.</p>
-
-    <div class="skill-chips">
-      <button class="skill-chip active" onclick="setAdPlatform(this,'google')">🔍 Google Ads</button>
-      <button class="skill-chip" onclick="setAdPlatform(this,'meta')">📘 Meta Ads</button>
-      <button class="skill-chip" onclick="setAdPlatform(this,'linkedin-ads')">💼 LinkedIn Ads</button>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Producto / Servicio anunciado</label>
-        <input type="text" id="ad-producto" placeholder="Ej. Curso online de marketing digital" />
-      </div>
-      <div class="form-group">
-        <label>Audiencia objetivo</label>
-        <input type="text" id="ad-audiencia" placeholder="Ej. Emprendedores 25-45 años" />
-      </div>
-      <div class="form-group">
-        <label>Objetivo del anuncio</label>
-        <select id="ad-objetivo">
-          <option value="conversiones">Conversiones / Ventas</option>
-          <option value="trafico">Tráfico al sitio</option>
-          <option value="leads">Generación de leads</option>
-          <option value="awareness">Brand awareness</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Oferta / CTA principal</label>
-        <input type="text" id="ad-oferta" placeholder="Ej. Prueba gratis 14 días, Descuento 30%..." />
-      </div>
-      <div class="form-group">
-        <label>Principal diferenciador</label>
-        <input type="text" id="ad-diferenciador" placeholder="¿Por qué eres mejor que la competencia?" />
-      </div>
-      <div class="form-group full">
-        <label>Objeciones que tiene el cliente</label>
-        <textarea id="ad-objeciones" placeholder="¿Qué le impide comprar? Precio, confianza, tiempo..."></textarea>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generarAds()">🎯 Generar Anuncios</button>
-
-    <div class="output-box loading" id="ads-output" style="margin-top:24px;">
-      Tus anuncios aparecerán aquí...
-    </div>
-    <div style="margin-top:12px;">
-      <button class="btn btn-secondary btn-sm" onclick="copiarTexto('ads-output')">📋 Copiar</button>
-    </div>
-  </section>
-
-</main>
-
-<script>
-  // ── State ──
-  let emailTipo = 'bienvenida';
-  let platform = 'linkedin';
-  let adPlatform = 'google';
-  let stats = { quotes: 0, content: 0, emails: 0 };
-
-  // ── Navigation ──
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    // highlight nav
-    document.querySelectorAll('.nav-item').forEach(n => {
-      if (n.getAttribute('onclick')?.includes(id)) n.classList.add('active');
-    });
-  }
-
-  // ── Chip selectors ──
-  function setEmailTipo(el, tipo) {
-    document.querySelectorAll('#emails .skill-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    emailTipo = tipo;
-  }
-  function setPlatform(el, p) {
-    document.querySelectorAll('#social .skill-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    platform = p;
-  }
-  function setAdPlatform(el, p) {
-    document.querySelectorAll('#ads .skill-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    adPlatform = p;
-  }
-
-  // ── Update stats ──
-  function updateStat(key) {
-    stats[key]++;
-    const map = { quotes: 'stat-quotes', content: 'stat-content', emails: 'stat-emails' };
-    document.getElementById(map[key]).textContent = stats[key];
-  }
-
-  // ── Utility ──
-  function copiarTexto(id) {
-    const el = document.getElementById(id);
-    navigator.clipboard.writeText(el.textContent).then(() => {
-      const btn = el.nextElementSibling?.querySelector('button');
-      if (btn) { const orig = btn.textContent; btn.textContent = '✅ Copiado'; setTimeout(() => btn.textContent = orig, 1500); }
-    });
-  }
-
-  // ── COTIZADOR ──
-  const serviciosPrecio = {
-    web:        [{ s: 'Diseño y maquetación', d: 'Wireframes + diseño UI responsivo', p: 800 },
-                 { s: 'Desarrollo frontend', d: 'HTML/CSS/JS o framework moderno', p: 1200 },
-                 { s: 'Integración CMS', d: 'Wordpress / Webflow / Strapi', p: 600 }],
-    marketing:  [{ s: 'Estrategia de campaña', d: 'Research, targeting y planificación', p: 700 },
-                 { s: 'Creación de creativos', d: 'Diseño de piezas para anuncios', p: 500 },
-                 { s: 'Gestión y optimización', d: 'Monitoreo mensual + reportes', p: 400 }],
-    seo:        [{ s: 'Auditoría SEO', d: 'Análisis técnico y de contenido', p: 600 },
-                 { s: 'Investigación de keywords', d: 'Clusters temáticos y oportunidades', p: 400 },
-                 { s: 'Optimización on-page', d: 'Meta, headings, schema markup', p: 500 }],
-    ads:        [{ s: 'Configuración de cuenta', d: 'Estructura de campañas y grupos', p: 500 },
-                 { s: 'Creación de anuncios', d: 'Copy, assets y extensiones', p: 400 },
-                 { s: 'Gestión mensual', d: 'Optimización de bids y audiencias', p: 600 }],
-    contenido:  [{ s: 'Estrategia editorial', d: 'Pilares, calendario y formatos', p: 700 },
-                 { s: 'Producción de contenido', d: '8 artículos / posts por mes', p: 800 },
-                 { s: 'Distribución y SEO', d: 'Publicación y optimización', p: 400 }],
-    branding:   [{ s: 'Identidad visual', d: 'Logo, paleta y tipografía', p: 1500 },
-                 { s: 'Brand guidelines', d: 'Manual de marca completo', p: 800 },
-                 { s: 'Assets de marca', d: 'Plantillas para redes y presentaciones', p: 600 }],
-    ecommerce:  [{ s: 'Tienda online', d: 'Shopify / WooCommerce configurado', p: 1500 },
-                 { s: 'Catálogo de productos', d: 'Carga, fotos y descripciones', p: 700 },
-                 { s: 'Pasarela de pagos', d: 'Integración y pruebas', p: 400 }],
-    app:        [{ s: 'Diseño UX/UI', d: 'Flujos, wireframes y prototipos', p: 2000 },
-                 { s: 'Desarrollo MVP', d: 'Funcionalidades core', p: 5000 },
-                 { s: 'QA y lanzamiento', d: 'Testing y publicación en stores', p: 1000 }],
-    consultoria:[{ s: 'Diagnóstico inicial', d: 'Análisis de situación actual', p: 500 },
-                 { s: 'Plan de acción', d: 'Roadmap y recomendaciones', p: 700 },
-                 { s: 'Sesiones de seguimiento', d: '4 sesiones mensuales de 1h', p: 800 }],
-  };
-
-  const multiplicador = { bajo: 0.7, medio: 1.0, alto: 1.3, enterprise: 1.8 };
-  const urgencia = { urgente: 1.25, normal: 1.0, relajado: 0.9 };
-
-  function generarCotizacion() {
-    const cliente = document.getElementById('q-cliente').value || 'Cliente';
-    const tipo = document.getElementById('q-tipo').value;
-    const presupuesto = document.getElementById('q-presupuesto').value;
-    const plazo = document.getElementById('q-plazo').value;
-    const descripcion = document.getElementById('q-descripcion').value;
-
-    if (!tipo) { alert('Selecciona el tipo de proyecto.'); return; }
-
-    const servicios = serviciosPrecio[tipo] || serviciosPrecio.consultoria;
-    const mult = (multiplicador[presupuesto] || 1) * (urgencia[plazo] || 1);
-
-    const tbody = document.getElementById('quote-items');
-    tbody.innerHTML = '';
-    let total = 0;
-
-    servicios.forEach(item => {
-      const precio = Math.round(item.p * mult / 50) * 50;
-      total += precio;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${item.s}</td><td style="color:var(--muted)">${item.d}</td><td>$${precio.toLocaleString()}</td>`;
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById('quote-total').textContent = '$' + total.toLocaleString();
-
-    const tipoNombre = document.querySelector('#q-tipo option:checked').text;
-    const plazoNombre = document.querySelector('#q-plazo option:checked')?.text || 'Normal';
-    const presNombre = document.querySelector('#q-presupuesto option:checked')?.text || 'Medio';
-
-    document.getElementById('quote-strategy').textContent =
-`📋 PROPUESTA PARA: ${cliente.toUpperCase()}
-────────────────────────────────
-Proyecto: ${tipoNombre}
-Plazo: ${plazoNombre}
-Nivel: ${presNombre}
-
-${descripcion ? '📝 Contexto: ' + descripcion + '\n\n' : ''}🎯 ESTRATEGIA DE PRESENTACIÓN:
-• Enfatiza el ROI: muestra cuánto puede ganar/ahorrar el cliente con esta inversión.
-• Usa el anclaje de precio: presenta el total primero, luego desglosa para mostrar el valor.
-• Ofrece 3 opciones: esta propuesta (media), una lite (-30%) y una premium (+40%) para usar el efecto señuelo.
-• Incluye una garantía o entregable de riesgo cero para el primer pago.
-• Propón una llamada de 30 minutos para ajustar antes de firmar — esto aumenta la tasa de cierre.
-
-💡 TIP DE PRICING (basado en marketingskills/pricing):
-El precio entre ${presNombre} refleja el valor percibido del cliente.
-Si no objetan el precio, puedes subir 20% en la próxima propuesta.`;
-
-    document.getElementById('cotizacion-output').style.display = 'block';
-    updateStat('quotes');
-  }
-
-  function limpiarCotizacion() {
-    ['q-cliente','q-descripcion'].forEach(id => document.getElementById(id).value = '');
-    ['q-tipo','q-presupuesto','q-plazo'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('cotizacion-output').style.display = 'none';
-  }
-
-  function exportarCotizacion() {
-    window.print();
-  }
-
-  function copiarCotizacion() {
-    const tabla = document.getElementById('quote-items').innerText;
-    const strat = document.getElementById('quote-strategy').textContent;
-    navigator.clipboard.writeText(tabla + '\n\n' + strat);
-    alert('¡Cotización copiada al portapapeles!');
-  }
-
-  // ── COPYWRITING ──
-  function generarCopy() {
-    const tipo = document.getElementById('copy-tipo').value;
-    const tono = document.getElementById('copy-tono').value;
-    const producto = document.getElementById('copy-producto').value || 'Tu producto';
-    const audiencia = document.getElementById('copy-audiencia').value || 'Tu audiencia';
-    const valor = document.getElementById('copy-valor').value || 'Ahorra tiempo y dinero';
-    const objeciones = document.getElementById('copy-objeciones').value;
-
-    const tiposNombre = { homepage: 'Homepage', landing: 'Landing Page', pricing: 'Página de Precios', feature: 'Página de Características', about: 'Sobre Nosotros' };
-    const headlines = {
-      profesional: [`La forma más eficiente de ${valor}`, `${producto} — Diseñado para ${audiencia}`],
-      casual: [`¿Cansado de perder tiempo? ${producto} lo resuelve`, `Haz más con menos — ${producto}`],
-      técnico: [`${valor} — sin fricción, sin compromiso`, `Infraestructura inteligente para ${audiencia}`],
-      inspirador: [`Transforma tu negocio. Empieza hoy con ${producto}`, `El futuro de ${audiencia} ya está aquí`],
-    };
-
-    const hl = headlines[tono] || headlines['profesional'];
-
-    const output = `✍️ COPY PARA: ${tiposNombre[tipo]}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔝 ABOVE THE FOLD
-
-Headline A: "${hl[0]}"
-Headline B: "${hl[1]}"
-
-Subheadline:
-"${producto} ayuda a ${audiencia} a ${valor.toLowerCase()} — sin complicaciones y desde el primer día."
-
-CTA Principal: → "Empieza Gratis" / "Ver Demo" / "Calcular mi Precio"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📌 SECCIÓN: Problema / Dolor
-"¿Sigues perdiendo horas en tareas que deberían ser automáticas?
-La mayoría de ${audiencia} enfrenta el mismo obstáculo: [problema].
-Existe una forma mejor."
-
-📌 SECCIÓN: Beneficios Clave (3-5)
-✓ ${valor}
-✓ Sin curva de aprendizaje — funciona desde el día 1
-✓ Integra con las herramientas que ya usas
-✓ Soporte real cuando lo necesitas
-✓ Resultados medibles en las primeras 2 semanas
-
-📌 SECCIÓN: Prueba Social
-"Más de 1,000 equipos ya usan ${producto}.
-[Testimonial]: 'Desde que implementamos esto, nuestro equipo redujo el tiempo de X en un 60%.' — Cliente, Empresa"
-
-📌 SECCIÓN: Cómo Funciona (3 pasos)
-1. Regístrate en 2 minutos
-2. Configura tu flujo de trabajo
-3. Empieza a ver resultados
-
-${objeciones ? `📌 MANEJO DE OBJECIONES\n${objeciones.split('\n').map(o => `❓ "${o.trim()}"\n✅ [Respuesta que elimina la duda]`).join('\n')}` : ''}
-
-📌 CTA FINAL
-"¿Listo para dejar de perder tiempo?
-Empieza gratis hoy — sin tarjeta de crédito.
-[Botón: Comenzar ahora →]"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 BASADO EN: marketingskills/copywriting
-Principio aplicado: Claridad > creatividad. Beneficios > características.`;
-
-    document.getElementById('copy-output').textContent = output;
-    document.getElementById('copy-output').classList.remove('loading');
-    updateStat('content');
-  }
-
-  // ── EMAILS ──
-  function generarEmail() {
-    const producto = document.getElementById('email-producto').value || 'tu producto';
-    const audiencia = document.getElementById('email-audiencia').value || 'tu audiencia';
-    const objetivo = document.getElementById('email-objetivo').value || 'convertir a cliente de pago';
-    const contexto = document.getElementById('email-contexto').value;
-
-    const secuencias = {
-      bienvenida: [
-        { num: 1, nombre: 'Bienvenida + Entrega de valor', timing: 'Inmediato',
-          asunto: `Bienvenido/a a ${producto} — Empieza aquí`,
-          preview: 'Todo lo que necesitas para dar el primer paso.',
-          cuerpo: `Hola [Nombre],\n\nGracias por unirte. Tomaste una gran decisión.\n\nHere's lo que puedes hacer ahora mismo:\n→ [Acción rápida #1]\n→ [Acción rápida #2]\n\nEn los próximos días te voy a compartir tips para que ${objetivo.toLowerCase()}.\n\nCualquier pregunta, responde este email — leo todo.\n\n[Tu nombre]` },
-        { num: 2, nombre: 'Quick Win', timing: 'Día 1-2',
-          asunto: `El truco que el 80% no usa en ${producto}`,
-          preview: 'Pruébalo en 5 minutos.',
-          cuerpo: `Hola [Nombre],\n\nUn consejo rápido que marca la diferencia:\n\n[Tip específico de alto valor]\n\n¿Ya lo probaste? Cuéntame cómo te fue.\n\n[Tu nombre]` },
-        { num: 3, nombre: 'Historia / Por qué existimos', timing: 'Día 3-4',
-          asunto: 'Por qué creamos esto (historia real)',
-          preview: 'El problema que nos obsesionó...',
-          cuerpo: `Hola [Nombre],\n\nDetrás de ${producto} hay una historia.\n\nAntes de crearlo, ${audiencia} como tú enfrentaban [problema]. Nosotros también.\n\nFue frustrante hasta que encontramos la solución.\n\nHoy ${producto} existe para que nunca vuelvas a pasar por eso.\n\n[Tu nombre]` },
-        { num: 4, nombre: 'Social Proof', timing: 'Día 5-6',
-          asunto: 'Cómo [Cliente] logró [resultado] con ${producto}',
-          preview: 'Un resultado que inspirará.',
-          cuerpo: `Hola [Nombre],\n\n"[Testimonio real de cliente]" — [Nombre, Empresa]\n\n[Cliente] tenía el mismo reto que tú.\n\nEsto es lo que hizo diferente:\n→ [Paso 1]\n→ [Paso 2]\n\n¿Quieres el mismo resultado? [CTA]\n\n[Tu nombre]` },
-        { num: 5, nombre: 'Conversión / Oferta', timing: 'Día 12-14',
-          asunto: `[Nombre], esto es solo para ti`,
-          preview: 'Una oferta especial por tiempo limitado.',
-          cuerpo: `Hola [Nombre],\n\nLlevamos [X días] juntos y quiero reconocer eso.\n\nPor eso tengo algo especial para ti: [oferta/descuento/bono]\n\nPero solo por [X días].\n\n→ [CTA: Aprovecha ahora]\n\n[Tu nombre]` },
-      ],
-      nurture: [
-        { num: 1, nombre: 'Entrega el Lead Magnet', timing: 'Inmediato', asunto: 'Tu [recurso] está aquí', preview: 'Lo prometido.', cuerpo: `Hola,\n\nAquí tienes el recurso que pediste: [Link]\n\nEn los próximos días te voy a compartir más sobre [tema relacionado].\n\n[Tu nombre]` },
-        { num: 2, nombre: 'Deep dive del problema', timing: 'Día 2-3', asunto: '¿Por qué [problema] es tan difícil de resolver?', preview: 'La respuesta te sorprenderá.', cuerpo: `Hola,\n\nLa razón por la que [problema] persiste no es [mito].\n\nEn realidad es [causa real].\n\nY eso cambia todo.\n\n[Tu nombre]` },
-        { num: 3, nombre: 'Oferta directa', timing: 'Día 19-21', asunto: '[Nombre], una propuesta para ti', preview: 'Sin rodeos.', cuerpo: `Hola,\n\nHe compartido mucho contigo. Hoy te hago una propuesta directa:\n\n${producto} puede ayudarte a ${objetivo.toLowerCase()}.\n\n→ [CTA claro]\n\n[Tu nombre]` },
-      ],
-      reengagement: [
-        { num: 1, nombre: 'Check-in genuino', timing: 'Después de 30 días inactivo', asunto: '¿Sigues ahí, [Nombre]?', preview: 'Solo quiero saber cómo estás.', cuerpo: `Hola [Nombre],\n\nHace un tiempo que no sé de ti.\n\n¿Todo bien? ¿Encontraste lo que buscabas?\n\nEstaré aquí si necesitas algo.\n\n[Tu nombre]` },
-        { num: 2, nombre: 'Recordatorio de valor', timing: 'Día 3-4', asunto: 'Lo nuevo que quizás te perdiste', preview: 'Mejoras que te van a gustar.', cuerpo: `Hola [Nombre],\n\nDesde la última vez que hablamos, ${producto} mejoró mucho.\n\nNuevidades:\n→ [Feature 1]\n→ [Feature 2]\n\n¿Volvemos a empezar?\n\n[Tu nombre]` },
-        { num: 3, nombre: 'Última oportunidad', timing: 'Día 14', asunto: '¿Me quedo o me voy? Tú decides', preview: 'Sin presión.', cuerpo: `Hola [Nombre],\n\nNo quiero enviarte emails si no son útiles para ti.\n\nSi quieres seguir recibiendo [valor], haz click aquí: [Sí, quiero seguir]\n\nSi no, te doy de baja sin problema: [Darme de baja]\n\n[Tu nombre]` },
-      ],
-    };
-
-    const seq = secuencias[emailTipo] || secuencias.bienvenida;
-    const tipoNombre = { bienvenida: '👋 Bienvenida', nurture: '🌱 Nurture', reengagement: '♻️ Re-engagement', onboarding: '🚀 Onboarding', frio: '❄️ Email Frío' };
-
-    let output = `📧 SECUENCIA: ${tipoNombre[emailTipo]}\nProducto: ${producto} | Audiencia: ${audiencia}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-
-    seq.forEach(email => {
-      output += `EMAIL #${email.num}: ${email.nombre}\n`;
-      output += `📅 Envío: ${email.timing}\n`;
-      output += `📌 Asunto: ${email.asunto}\n`;
-      output += `👁 Preview: ${email.preview}\n`;
-      output += `\n${email.cuerpo}\n`;
-      output += '\n────────────────────────────\n\n';
-    });
-
-    output += `💡 BASADO EN: marketingskills/emails\nMétrica objetivo: Tasa de apertura >30%, Clic >3%, Conversión >1%`;
-
-    document.getElementById('email-output').textContent = output;
-    document.getElementById('email-output').classList.remove('loading');
-    updateStat('emails');
-  }
-
-  // ── SOCIAL ──
-  function generarSocial() {
-    const tema = document.getElementById('social-tema').value || 'marketing digital';
-    const objetivo = document.getElementById('social-objetivo').value;
-    const tono = document.getElementById('social-tono').value;
-    const marca = document.getElementById('social-marca').value;
-
-    const configs = {
-      linkedin: { max: '3,000 caracteres', freq: '3-5x/semana', formato: 'Carrusel o texto largo' },
-      twitter:  { max: '280 caracteres', freq: '3-10x/día', formato: 'Thread o hot take' },
-      instagram:{ max: '2,200 caracteres', freq: '1-2 posts/día', formato: 'Reels o carrusel' },
-      tiktok:   { max: '2,200 caracteres', freq: '1-4x/día', formato: 'Video corto (15-60s)' },
-    };
-
-    const cfg = configs[platform];
-    const platName = { linkedin: 'LinkedIn', twitter: 'Twitter/X', instagram: 'Instagram', tiktok: 'TikTok' }[platform];
-
-    const hooks = {
-      educativo: [`¿Sabías que ${tema}? Aquí lo que nadie te dice:`, `${tema} explicado en 60 segundos:`],
-      inspirador: [`${tema} cambió todo para mí. Aquí cómo:`, `Esto fue lo que aprendí sobre ${tema}:`],
-      casual: [`Seré honesto sobre ${tema}...`, `Hot take: ${tema} no es lo que crees`],
-      profesional: [`3 puntos clave sobre ${tema}:`, `Después de analizar ${tema}, llegué a esta conclusión:`],
-      humoristico: [`Me pagaron para decirlo: ${tema} es difícil. (Es broma, casi.)`, `Nadie habla de esto: ${tema}`],
-    };
-
-    const hookList = hooks[tono] || hooks.profesional;
-
-    const output = `📱 POST PARA: ${platName}
-Tema: ${tema}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎣 OPCIÓN A — Hook:
-"${hookList[0]}"
-
-[Párrafo 1: Contexto del problema o situación]
-[Párrafo 2: El insight o lección clave]
-[Párrafo 3: El resultado o takeaway]
-
-→ CTA: [Comparte si te ayudó / Comenta tu experiencia / Link en bio]
-
-#hashtag1 #hashtag2 #hashtag3
-
-────────────────────────────
-
-🎣 OPCIÓN B — Hook:
-"${hookList[1]}"
-
-[Punto 1] ✓
-[Punto 2] ✓
-[Punto 3] ✓
-[Punto 4] ✓
-[Punto 5] ✓
-
-¿Cuál te parece más importante? Comenta abajo 👇
-
-#${tema.replace(/\s+/g,'').toLowerCase()} #marketing #${platName.toLowerCase()}
-
-────────────────────────────
-
-📊 SPECS DE PLATAFORMA (${platName}):
-• Límite: ${cfg.max}
-• Frecuencia recomendada: ${cfg.freq}
-• Formato estrella: ${cfg.formato}
-• Objetivo seleccionado: ${objetivo}
-
-${marca ? `\n🏷 CONTEXTO DE MARCA:\n${marca}` : ''}
-
-💡 BASADO EN: marketingskills/social
-Tip: En ${platName}, las primeras 2 líneas determinan si alguien hace clic en "ver más". Haz que cuenten.`;
-
-    document.getElementById('social-output').textContent = output;
-    document.getElementById('social-output').classList.remove('loading');
-    updateStat('content');
-  }
-
-  // ── PRICING ──
-  function generarPricing() {
-    const tipo = document.getElementById('p-tipo').value;
-    const mercado = document.getElementById('p-mercado').value;
-    const producto = document.getElementById('p-producto').value || 'tu producto';
-    const precioActual = document.getElementById('p-precio-actual').value;
-    const competidor = document.getElementById('p-competidor').value || 'alternativas del mercado';
-    const valor = document.getElementById('p-valor').value || 'un resultado tangible';
-
-    const precios = {
-      smb: [29, 79, 199],
-      midmarket: [99, 299, 799],
-      enterprise: [499, 1499, 4999],
-      consumidor: [9, 29, 79],
-    };
-
-    const ps = precios[mercado] || precios.smb;
-
-    // Show tiers
-    document.getElementById('pricing-tiers-output').style.display = 'block';
-    document.getElementById('pricing-tiers').innerHTML = `
-      <div class="tier">
-        <div class="tier-name">Starter</div>
-        <div class="tier-price">$${ps[0]}</div>
-        <div class="tier-period">/mes — ideal para comenzar</div>
-        <ul class="tier-features">
-          <li>Funcionalidades core</li>
-          <li>Hasta 3 usuarios</li>
-          <li>Soporte por email</li>
-          <li>1,000 operaciones/mes</li>
-        </ul>
-      </div>
-      <div class="tier recommended">
-        <div class="tier-badge">RECOMENDADO</div>
-        <div class="tier-name">Pro</div>
-        <div class="tier-price">$${ps[1]}</div>
-        <div class="tier-period">/mes — el más popular</div>
-        <ul class="tier-features">
-          <li>Todo de Starter +</li>
-          <li>Hasta 15 usuarios</li>
-          <li>Soporte prioritario</li>
-          <li>10,000 operaciones/mes</li>
-          <li>Integraciones avanzadas</li>
-          <li>Analytics y reportes</li>
-        </ul>
-      </div>
-      <div class="tier">
-        <div class="tier-name">Enterprise</div>
-        <div class="tier-price">$${ps[2]}</div>
-        <div class="tier-period">/mes — máximo valor</div>
-        <ul class="tier-features">
-          <li>Todo de Pro +</li>
-          <li>Usuarios ilimitados</li>
-          <li>Dedicated account manager</li>
-          <li>Operaciones ilimitadas</li>
-          <li>SSO / SAML</li>
-          <li>SLA garantizado</li>
-        </ul>
-      </div>
-    `;
-
-    const output = `📊 ESTRATEGIA DE PRECIOS — ${producto.toUpperCase()}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 RESUMEN EJECUTIVO:
-• Mercado: ${mercado} | Tipo: ${tipo}
-• Rango recomendado: $${ps[0]} – $${ps[2]}/mes
-• Valor principal entregado: ${valor}
-• Referencia: ${competidor}
-${precioActual ? `• Precio actual: ${precioActual}` : ''}
-
-📐 MÉTRICA DE VALOR RECOMENDADA:
-Para ${tipo} en mercado ${mercado}, la métrica más efectiva es:
-${tipo === 'saas' ? '→ Por usuario/mes (escala con el equipo)' : '→ Por proyecto o retainer mensual'}
-
-Justificación: Esta métrica crece con el cliente — alineando el precio con el valor recibido.
-
-💡 PSICOLOGÍA DE PRECIOS (de marketingskills/pricing):
-✓ Tier central ($${ps[1]}) es el "decoy" — hace parecer razonable al Pro
-✓ Muestra el precio más alto primero para anclar la percepción
-✓ "Recomendado" en el tier central aumenta conversión hasta 40%
-✓ Descuento anual de 17-20% mejora LTV y reduce churn
-✓ Usa precios redondeados para premium, charm pricing para SMB
-
-📈 SEÑALES PARA SUBIR PRECIO:
-• Conversión >40% (precio muy bajo)
-• Clientes dicen "es muy barato"
-• Churn <3% mensual
-• Competidor sube precios
-
-⚠️ RIESGOS A EVITAR:
-• No diferencias los tiers suficientemente → clientes eligen el más barato siempre
-• Demasiados tiers → parálisis de decisión
-• Precio basado en costo, no en valor → dejas dinero sobre la mesa
-
-🔢 ESTRATEGIA DE DESCUENTO ANUAL:
-• Mensual: $${ps[1]}/mes
-• Anual: $${Math.round(ps[1] * 10)}/año (equivale a $${Math.round(ps[1] * 10/12)}/mes — ahorras 2 meses)`;
-
-    document.getElementById('pricing-output').textContent = output;
-    document.getElementById('pricing-output').classList.remove('loading');
-    updateStat('content');
-  }
-
-  // ── CONTENT STRATEGY ──
-  function generarContenido() {
-    const empresa = document.getElementById('cs-empresa').value || 'tu empresa';
-    const cliente = document.getElementById('cs-cliente').value || 'tu cliente ideal';
-    const objetivo = document.getElementById('cs-objetivo').value;
-    const preguntas = document.getElementById('cs-preguntas').value;
-
-    const objs = {
-      trafico: 'Tráfico orgánico (SEO)',
-      leads: 'Generación de leads',
-      awareness: 'Brand awareness',
-      liderazgo: 'Liderazgo de pensamiento',
-    };
-
-    const output = `📝 PLAN DE CONTENIDO — ${empresa.toUpperCase()}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 Objetivo: ${objs[objetivo]}
-👥 Audiencia: ${cliente}
-
-🏛 PILARES DE CONTENIDO (3-5 temas core):
-
-Pilar 1 — EDUCACIONAL
-"Cómo [resolver el problema principal de ${cliente}]"
-→ Artículos de guía, tutoriales, explicaciones
-
-Pilar 2 — PRUEBA SOCIAL
-"Historias de éxito y casos de estudio"
-→ Antes/después, resultados reales, testimonios
-
-Pilar 3 — OPINIÓN / LIDERAZGO
-"Perspectivas únicas sobre la industria"
-→ Hot takes, tendencias, predicciones
-
-Pilar 4 — PRODUCTO / SOLUCIÓN
-"Cómo [empresa] resuelve [problema]"
-→ Features, demos, comparativas
-
-Pilar 5 — COMUNIDAD
-"Preguntas, encuestas, conversaciones"
-→ Engagement y feedback
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📅 CALENDARIO MENSUAL (sugerido):
-
-Semana 1: [Pilar 1] Artículo educacional largo + 3 posts sociales derivados
-Semana 2: [Pilar 3] Opinión/tendencia + Newsletter + Thread en Twitter
-Semana 3: [Pilar 2] Caso de éxito + LinkedIn carousel + Email a lista
-Semana 4: [Pilar 4] Contenido de producto + Video corto + Comparativa
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-${preguntas ? `❓ IDEAS DE CONTENIDO BASADAS EN TUS PREGUNTAS:\n${preguntas.split('\n').filter(q=>q.trim()).map((q,i) => `${i+1}. "${q.trim()}" → Artículo: "La respuesta definitiva a [${q.trim()}]"`).join('\n')}\n\n` : ''}
-
-🔍 TIPOS DE CONTENIDO POR OBJETIVO:
-${objetivo === 'trafico' ? `
-• Prioridad: artículos SEO (1,500-3,000 palabras)
-• Keywords: enfócate en long-tail con intención de compra
-• Estructura: problema → solución → CTA
-• Actualiza el top 10% de artículos existentes antes de crear nuevos` : ''}
-${objetivo === 'leads' ? `
-• Prioridad: lead magnets (guías, plantillas, calculadoras)
-• Landing pages optimizadas por cada lead magnet
-• Email nurture sequence para cada descarga
-• Gated content estratégico (pide solo email + nombre)` : ''}
-${objetivo === 'awareness' ? `
-• Prioridad: contenido shareable y de opinión
-• Formatos: carruseles, threads, videos cortos
-• Consistencia > viralidad — publica siempre
-• Colabora con creadores de tu nicho` : ''}
-${objetivo === 'liderazgo' ? `
-• Prioridad: investigación original + datos propios
-• Formatos: reportes, estudios, predicciones anuales
-• Distribución: LinkedIn + newsletter + podcasts como invitado
-• Cita fuentes, muestra metodología, sé específico` : ''}
-
-💡 BASADO EN: marketingskills/content-strategy
-Principio: Todo el contenido debe ser "searchable" (SEO) o "shareable" (viral) — idealmente ambos.`;
-
-    document.getElementById('content-output').textContent = output;
-    document.getElementById('content-output').classList.remove('loading');
-    updateStat('content');
-  }
-
-  // ── ADS ──
-  function generarAds() {
-    const producto = document.getElementById('ad-producto').value || 'tu producto';
-    const audiencia = document.getElementById('ad-audiencia').value || 'tu audiencia';
-    const objetivo = document.getElementById('ad-objetivo').value;
-    const oferta = document.getElementById('ad-oferta').value || 'Prueba gratis';
-    const diferenciador = document.getElementById('ad-diferenciador').value || 'la mejor opción';
-    const objeciones = document.getElementById('ad-objeciones').value;
-
-    const platName = { google: 'Google Ads', meta: 'Meta Ads (Facebook/Instagram)', 'linkedin-ads': 'LinkedIn Ads' }[adPlatform];
-
-    const output = `🎯 CREATIVOS PARA: ${platName}
-Producto: ${producto}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-${adPlatform === 'google' ? `🔍 GOOGLE ADS — Anuncio de Búsqueda (RSA)
-
-TITULOS (máx. 30 caracteres c/u — crea 10+):
-1. ${producto.slice(0,25)} — Prueba Ya
-2. ${oferta} — Empieza Hoy
-3. ${diferenciador.slice(0,28)}
-4. Para ${audiencia.slice(0,22)}
-5. Sin Comisiones — Sin Trampa
-6. Líder del Mercado — Confiable
-7. [Número] de clientes satisfechos
-8. Resultados en [X días]
-9. Gratis vs. ${producto.slice(0,20)}
-10. El preferido por expertos
-
-DESCRIPCIONES (máx. 90 caracteres c/u — crea 4+):
-1. "${diferenciador}. ${oferta}. Sin compromisos."
-2. "Más de [X] empresas ya confían en nosotros. Únete hoy."
-3. "${producto} — la solución que ${audiencia} estaba esperando."
-4. "No pierdas más tiempo. ${oferta} y ve resultados esta semana."` : ''}
-
-${adPlatform === 'meta' ? `📘 META ADS — Facebook / Instagram
-
-TIPO DE ANUNCIO: Imagen estática o carrusel
-
-COPY PRINCIPAL (máx. 125 chars visible):
-"¿Eres ${audiencia}? Descubre cómo ${diferenciador.toLowerCase()}.
-${oferta} — Sin compromiso. ✓"
-
-HEADLINE (máx. 40 chars):
-"${producto} — ${oferta}"
-
-DESCRIPCIÓN (descripción de link, 30 chars):
-"${diferenciador.slice(0,28)}"
-
-VARIANTE HOOK 1 (problema):
-"¿Cansado de [problema]? ${producto} lo resuelve.
-${oferta} para ${audiencia}. Empieza ahora →"
-
-VARIANTE HOOK 2 (social proof):
-"[X] personas como tú ya usan ${producto}.
-Aquí por qué lo eligieron → ${oferta}"
-
-VARIANTE HOOK 3 (curiosidad):
-"Lo que ${audiencia} no sabe sobre [resultado posible]...
-${producto} te lo muestra. ${oferta}"` : ''}
-
-${adPlatform === 'linkedin-ads' ? `💼 LINKEDIN ADS — Sponsored Content
-
-INTRO TEXT (máx. 600 chars):
-"${audiencia}: ¿Siguen usando [método antiguo]?
-
-Con ${producto} puedes ${diferenciador.toLowerCase()}.
-
-✓ [Beneficio 1]
-✓ [Beneficio 2]
-✓ [Beneficio 3]
-
-${oferta} — solo para equipos en crecimiento."
-
-HEADLINE (máx. 70 chars):
-"${producto} — ${diferenciador.slice(0,40)}"
-
-DESCRIPCION (máx. 70 chars):
-"${oferta} para ${audiencia.slice(0,35)}"
-
-FORMATOS RECOMENDADOS para LinkedIn:
-→ Single Image Ad: para awareness y leads
-→ Carousel Ad: para mostrar features o casos de uso
-→ Lead Gen Form: para capturar leads sin salir de LinkedIn` : ''}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-${objeciones ? `⚠️ MANEJO DE OBJECIONES EN ADS:\n${objeciones.split('\n').filter(o=>o.trim()).map(o => `Objeción: "${o.trim()}" → Contraarma: [añade prueba social / garantía / demo]`).join('\n')}\n\n` : ''}
-
-📐 ESTRUCTURA DE CAMPAÑA RECOMENDADA:
-• Campaña 1: Audiencia fría (awareness) → objetivo ${objetivo}
-• Campaña 2: Retargeting visitantes → CTA más directo
-• Campaña 3: Lookalike de clientes existentes → oferta de conversión
-• Presupuesto sugerido: 70% frío / 30% retargeting
-
-💡 BASADO EN: marketingskills/ad-creative
-Tip: Prueba siempre 3+ variantes de hook. El 80% del resultado viene del creativo, no del targeting.`;
-
-    document.getElementById('ads-output').textContent = output;
-    document.getElementById('ads-output').classList.remove('loading');
-    updateStat('content');
-  }
-</script>
+    <script>
+        const motoData = {
+            "U2": {lista: 21945, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/U2Gris34Izq.png", desc: "150cc - Trabajo"},
+            "U5": {lista: 26145, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/U5_roja_34Izq_2022.png", desc: "150cc - Trabajo"},
+            "Metro": {lista: 31395, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/Metro-Vrd-34Izq.png", desc: "125cc - Scooter"},
+            "Adventure Elite": {lista: 31395, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/Adventure_Roja34Izq.png", desc: "150cc - Scooter"},
+            "Alien R": {lista: 32445, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/Alien-Gr34Izq.png", desc: "175cc - Scooter"},
+            "Custom": {lista: 38745, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/08/custom_roja_34izq.png", desc: "150cc - Cruiser"},
+            "Rayo": {lista: 42945, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/08/rayo175_negra_34Izq_2021.png", desc: "175cc - Cruiser"},
+            "Custom Black": {lista: 43985, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/08/Customblack_34izq_1200.png", desc: "175cc - Cruiser"},
+            "Chopper": {lista: 38556, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/CHOPPER-250-AZUL-3_4-DER.png", desc: "250cc - Bobber"},
+            "Renegada": {lista: 51650, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/Renegada-Verde-3.png", desc: "250cc - Cruiser"},
+            "Rayo Elite": {lista: 52805, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/RayoE_Izq-3_4-Azul.png", desc: "250cc - Cruiser"},
+            "B-52": {lista: 68145, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/B52Roja_34Izq1200x1200.png", desc: "250cc - Cruiser"},
+            "Bandid": {lista: 83895, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/bandid-NR-34Izq-1200.png", desc: "350cc - Cruiser"},
+            "KF-RACER": {lista: 21971, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/08/Kf_verde_34Izq_2021.png", desc: "150cc - Café Racer"},
+            "DNM 2.5": {lista: 61520, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/DNM2.5-34IZQ.png", desc: "250cc - Enduro"},
+            "DNM 3.0": {lista: 83675, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/DNM30_34DerFrente_1200x1200.png", desc: "300cc - Enduro"},
+            "Scorpion": {lista: 39575, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/SCORPION200_BLANCA-34-IZQ_2021.png", desc: "200cc - Doble Propósito"},
+            "Scorpion XT": {lista: 41895, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/scorpionXT-Verde-34Izq-1200.png", desc: "250cc - Doble Propósito"},
+            "Rocky": {lista: 37370, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/rocky125_34DIzq-1200.png", desc: "125cc - ATV"},
+            "Xtreme RLX": {lista: 57645, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/RLX-roja_34Der.png", desc: "200cc - ATV"},
+            "Goliat": {lista: 78110, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/GOLIAT-BLANCA34Izq.png", desc: "200cc - Trimoto"},
+            "R4": {lista: 55335, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/R4_roja-34Izq.png", desc: "250cc - Deportiva"},
+            "R2 GT": {lista: 55010, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/R2gtRoja_34Der-1200.png", desc: "250cc - Naked"},
+            "SpeedFire": {lista: 56060, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/SPDF_azul_34_Izq.png", desc: "250cc - Naked"},
+            "DNM-4": {lista: 75905, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/DNM4-NegroyMate_34Izq.png", desc: "400cc - Naked"},
+            "Super Sport": {lista: 80315, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/Sport400_negra_34Izq.png", desc: "400cc - Deportiva"},
+            "Comando": {lista: 83895, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/1200CMDGris_34Der.png", desc: "400cc - Deportiva"},
+            "Heavy Cab B": {lista: 62895, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/HeavyB-34Izq.png", desc: "150cc - Motocarro"},
+            "Heavy Cab R": {lista: 69195, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/HRM-cost-34Izq-1200.png", desc: "200cc - Motocarro"},
+            "Heavy MAX": {lista: 94395, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/Hmax-roja-34Izq.png", desc: "250cc - Motocarro"},
+            "Heavy Cab 300": {lista: 90195, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/H300-34IZQ-1200.png", desc: "300cc - Motocarro"},
+            "Moto TX": {lista: 85995, imagen: "https://www.dinamotos.mx/wp-content/uploads/2025/07/taxiAma-34-Izq-1200.png", desc: "200cc - Moto Taxi"}
+        };
+
+        const datos = {
+            "U2": { lista: 21945, planes: { "CREDINAMO": { "50%": {enganche: 10973, cuotas: {12: 1113, 18: 817, 24: 664, 36: 532, 48: 481, 60: 464, 72: 444}}, "10%": {enganche: 2195, cuotas: {12: 2054, 18: 1521, 24: 1248, 36: 1016, 48: 930, 60: 903, 72: 872}}, "20%": {enganche: 4389, cuotas: {12: 1781, 18: 1306, 24: 1062, 36: 851, 48: 770, 60: 742, 72: 711}}, "5%": {enganche: 1097, cuotas: {12: 2115, 18: 1551, 24: 1261, 36: 1010, 48: 914, 60: 881, 72: 844}}, "30%": {enganche: 6584, cuotas: {12: 1501, 18: 1084, 24: 868, 36: 679, 48: 602, 60: 572, 72: 541}}, "15%": {enganche: 3292, cuotas: {12: 1987, 18: 1487, 24: 1231, 36: 1016, 48: 940, 60: 920, 72: 893}} }, "MOTONOMINA": { "5%": {enganche: 1097, cuotas: {12: 2115, 18: 1551, 24: 1261, 36: 1010, 48: 914, 60: 881, 72: 844}}, "30%": {enganche: 6584, cuotas: {12: 1501, 18: 1084, 24: 868, 36: 679, 48: 602, 60: 572, 72: 541}} }, "MOTOXPRESS": { "15%": {enganche: 3292, cuotas: {12: 1987, 18: 1487, 24: 1231, 36: 1016, 48: 940, 60: 920, 72: 893}} }, "MSI": {precio: 21945} } },
+            "KF-RACER": { lista: 21971, planes: { "CREDINAMO": { "50%": {enganche: 10986, cuotas: {12: 1114, 18: 818, 24: 665, 36: 532, 48: 482, 60: 464, 72: 445}}, "10%": {enganche: 2197, cuotas: {12: 2056, 18: 1523, 24: 1250, 36: 1017, 48: 931, 60: 905, 72: 873}}, "20%": {enganche: 4394, cuotas: {12: 1783, 18: 1308, 24: 1063, 36: 852, 48: 771, 60: 743, 72: 712}}, "5%": {enganche: 1099, cuotas: {12: 2117, 18: 1553, 24: 1263, 36: 1012, 48: 915, 60: 882, 72: 845}}, "30%": {enganche: 6591, cuotas: {12: 1503, 18: 1086, 24: 870, 36: 679, 48: 603, 60: 573, 72: 542}}, "15%": {enganche: 3296, cuotas: {12: 1997, 18: 1482, 24: 1232, 36: 1018, 48: 941, 60: 889, 72: 861}} }, "MOTONOMINA": { "5%": {enganche: 1099, cuotas: {12: 2117, 18: 1553, 24: 1263, 36: 1012, 48: 915, 60: 882, 72: 845}}, "30%": {enganche: 6591, cuotas: {12: 1503, 18: 1086, 24: 870, 36: 679, 48: 603, 60: 573, 72: 542}} }, "MOTOXPRESS": { "15%": {enganche: 3296, cuotas: {12: 1997, 18: 1482, 24: 1232, 36: 1018, 48: 941, 60: 889, 72: 861}} }, "MSI": {precio: 21971} } },
+            "U5": { lista: 26145, planes: { "CREDINAMO": { "50%": {enganche: 13073, cuotas: {12: 1326, 18: 973, 24: 791, 36: 634, 48: 573, 60: 552, 72: 529}}, "10%": {enganche: 2615, cuotas: {12: 2447, 18: 1813, 24: 1487, 36: 1210, 48: 1108, 60: 1076, 72: 1039}}, "20%": {enganche: 5229, cuotas: {12: 2122, 18: 1557, 24: 1265, 36: 1014, 48: 917, 60: 884, 72: 847}}, "5%": {enganche: 1307, cuotas: {12: 2520, 18: 1848, 24: 1502, 36: 1204, 48: 1089, 60: 1050, 72: 1006}}, "30%": {enganche: 7844, cuotas: {12: 1788, 18: 1292, 24: 1035, 36: 808, 48: 717, 60: 681, 72: 644}}, "15%": {enganche: 3922, cuotas: {12: 2376, 18: 1764, 24: 1466, 36: 1211, 48: 1120, 60: 1058, 72: 1025}} }, "MOTONOMINA": { "5%": {enganche: 1307, cuotas: {12: 2520, 18: 1848, 24: 1502, 36: 1204, 48: 1089, 60: 1050, 72: 1006}}, "30%": {enganche: 7844, cuotas: {12: 1788, 18: 1292, 24: 1035, 36: 808, 48: 717, 60: 681, 72: 644}} }, "MOTOXPRESS": { "15%": {enganche: 3922, cuotas: {12: 2376, 18: 1764, 24: 1466, 36: 1211, 48: 1120, 60: 1058, 72: 1025}} }, "MSI": {precio: 26145} } },
+            "Metro": { lista: 31395, planes: { "CREDINAMO": { "50%": {enganche: 15698, cuotas: {12: 1592, 18: 1168, 24: 950, 36: 761, 48: 688, 60: 663, 72: 636}}, "10%": {enganche: 3140, cuotas: {12: 2938, 18: 2177, 24: 1786, 36: 1453, 48: 1330, 60: 1292, 72: 1247}}, "20%": {enganche: 6279, cuotas: {12: 2548, 18: 1869, 24: 1519, 36: 1217, 48: 1101, 60: 1061, 72: 1017}}, "5%": {enganche: 1570, cuotas: {12: 3026, 18: 2220, 24: 1804, 36: 1446, 48: 1308, 60: 1260, 72: 1208}}, "30%": {enganche: 9419, cuotas: {12: 2147, 18: 1551, 24: 1242, 36: 971, 48: 861, 60: 818, 72: 774}}, "15%": {enganche: 4709, cuotas: {12: 2853, 18: 2118, 24: 1761, 36: 1454, 48: 1345, 60: 1271, 72: 1230}} }, "MOTONOMINA": { "5%": {enganche: 1570, cuotas: {12: 3026, 18: 2220, 24: 1804, 36: 1446, 48: 1308, 60: 1260, 72: 1208}}, "30%": {enganche: 9419, cuotas: {12: 2147, 18: 1551, 24: 1242, 36: 971, 48: 861, 60: 818, 72: 774}} }, "MOTOXPRESS": { "15%": {enganche: 4709, cuotas: {12: 2853, 18: 2118, 24: 1761, 36: 1454, 48: 1345, 60: 1271, 72: 1230}} }, "MSI": {precio: 31395} } },
+            "Adventure Elite": { lista: 31395, planes: { "CREDINAMO": { "50%": {enganche: 15698, cuotas: {12: 1592, 18: 1168, 24: 950, 36: 761, 48: 688, 60: 663, 72: 636}}, "10%": {enganche: 3140, cuotas: {12: 2938, 18: 2177, 24: 1786, 36: 1453, 48: 1330, 60: 1292, 72: 1247}}, "20%": {enganche: 6279, cuotas: {12: 2548, 18: 1869, 24: 1519, 36: 1217, 48: 1101, 60: 1061, 72: 1017}}, "5%": {enganche: 1570, cuotas: {12: 3026, 18: 2220, 24: 1804, 36: 1446, 48: 1308, 60: 1260, 72: 1208}}, "30%": {enganche: 9419, cuotas: {12: 2147, 18: 1551, 24: 1242, 36: 971, 48: 861, 60: 818, 72: 774}}, "15%": {enganche: 4709, cuotas: {12: 2853, 18: 2118, 24: 1761, 36: 1454, 48: 1345, 60: 1271, 72: 1230}} }, "MOTONOMINA": { "5%": {enganche: 1570, cuotas: {12: 3026, 18: 2220, 24: 1804, 36: 1446, 48: 1308, 60: 1260, 72: 1208}}, "30%": {enganche: 9419, cuotas: {12: 2147, 18: 1551, 24: 1242, 36: 971, 48: 861, 60: 818, 72: 774}} }, "MOTOXPRESS": { "15%": {enganche: 4709, cuotas: {12: 2853, 18: 2118, 24: 1761, 36: 1454, 48: 1345, 60: 1271, 72: 1230}} }, "MSI": {precio: 31395} } },
+            "Alien R": { lista: 32445, planes: { "CREDINAMO": { "50%": {enganche: 16223, cuotas: {12: 1646, 18: 1207, 24: 981, 36: 786, 48: 711, 60: 686, 72: 657}}, "10%": {enganche: 3245, cuotas: {12: 3036, 18: 2249, 24: 1846, 36: 1502, 48: 1375, 60: 1336, 72: 1289}}, "20%": {enganche: 6489, cuotas: {12: 2633, 18: 1932, 24: 1570, 36: 1258, 48: 1138, 60: 1097, 72: 1051}}, "5%": {enganche: 1622, cuotas: {12: 3127, 18: 2294, 24: 1864, 36: 1494, 48: 1351, 60: 1303, 72: 1248}}, "30%": {enganche: 9734, cuotas: {12: 2219, 18: 1603, 24: 1284, 36: 1003, 48: 890, 60: 846, 72: 800}}, "15%": {enganche: 4867, cuotas: {12: 2949, 18: 2189, 24: 1820, 36: 1503, 48: 1390, 60: 1313, 72: 1271}} }, "MOTONOMINA": { "5%": {enganche: 1622, cuotas: {12: 3127, 18: 2294, 24: 1864, 36: 1494, 48: 1351, 60: 1303, 72: 1248}}, "30%": {enganche: 9734, cuotas: {12: 2219, 18: 1603, 24: 1284, 36: 1003, 48: 890, 60: 846, 72: 800}} }, "MOTOXPRESS": { "15%": {enganche: 4867, cuotas: {12: 2949, 18: 2189, 24: 1820, 36: 1503, 48: 1390, 60: 1313, 72: 1271}} }, "MSI": {precio: 32445} } },
+            "Rocky": { lista: 37370, planes: { "CREDINAMO": { "50%": {enganche: 18685, cuotas: {12: 1896, 18: 1390, 24: 1130, 36: 906, 48: 819, 60: 790, 72: 757}}, "10%": {enganche: 3737, cuotas: {12: 3497, 18: 2591, 24: 2126, 36: 1730, 48: 1583, 60: 1538, 72: 1484}}, "20%": {enganche: 7474, cuotas: {12: 3033, 18: 2225, 24: 1808, 36: 1449, 48: 1311, 60: 1263, 72: 1210}}, "5%": {enganche: 1868, cuotas: {12: 3601, 18: 2642, 24: 2147, 36: 1721, 48: 1556, 60: 1500, 72: 1437}}, "30%": {enganche: 11211, cuotas: {12: 2556, 18: 1846, 24: 1479, 36: 1156, 48: 1025, 60: 974, 72: 921}}, "15%": {enganche: 5605, cuotas: {12: 3396, 18: 2521, 24: 2096, 36: 1731, 48: 1601, 60: 1513, 72: 1464}} }, "MOTONOMINA": { "5%": {enganche: 1868, cuotas: {12: 3601, 18: 2642, 24: 2147, 36: 1721, 48: 1556, 60: 1500, 72: 1437}}, "30%": {enganche: 11211, cuotas: {12: 2556, 18: 1846, 24: 1479, 36: 1156, 48: 1025, 60: 974, 72: 921}} }, "MOTOXPRESS": { "15%": {enganche: 5605, cuotas: {12: 3396, 18: 2521, 24: 2096, 36: 1731, 48: 1601, 60: 1513, 72: 1464}} }, "MSI": {precio: 37370} } },
+            "Scorpion": { lista: 39575, planes: { "CREDINAMO": { "50%": {enganche: 19787, cuotas: {12: 2007, 18: 1473, 24: 1197, 36: 959, 48: 867, 60: 836, 72: 801}}, "10%": {enganche: 3957, cuotas: {12: 3703, 18: 2744, 24: 2251, 36: 1832, 48: 1677, 60: 1629, 72: 1572}}, "20%": {enganche: 7915, cuotas: {12: 3212, 18: 2356, 24: 1915, 36: 1535, 48: 1388, 60: 1338, 72: 1282}}, "5%": {enganche: 1979, cuotas: {12: 3814, 18: 2798, 24: 2274, 36: 1822, 48: 1648, 60: 1589, 72: 1522}}, "30%": {enganche: 11872, cuotas: {12: 2707, 18: 1955, 24: 1566, 36: 1224, 48: 1085, 60: 1031, 72: 975}}, "15%": {enganche: 5936, cuotas: {12: 3596, 18: 2670, 24: 2220, 36: 1833, 48: 1696, 60: 1602, 72: 1551}} }, "MOTONOMINA": { "5%": {enganche: 1979, cuotas: {12: 3814, 18: 2798, 24: 2274, 36: 1822, 48: 1648, 60: 1589, 72: 1522}}, "30%": {enganche: 11872, cuotas: {12: 2707, 18: 1955, 24: 1566, 36: 1224, 48: 1085, 60: 1031, 72: 975}} }, "MOTOXPRESS": { "15%": {enganche: 5936, cuotas: {12: 3596, 18: 2670, 24: 2220, 36: 1833, 48: 1696, 60: 1602, 72: 1551}} }, "MSI": {precio: 39575} } },
+            "Custom": { lista: 38745, planes: { "CREDINAMO": { "50%": {enganche: 19373, cuotas: {12: 1965, 18: 1442, 24: 1172, 36: 939, 48: 849, 60: 819, 72: 784}}, "10%": {enganche: 3875, cuotas: {12: 3626, 18: 2686, 24: 2204, 36: 1794, 48: 1642, 60: 1595, 72: 1539}}, "20%": {enganche: 7749, cuotas: {12: 3144, 18: 2307, 24: 1875, 36: 1502, 48: 1359, 60: 1310, 72: 1255}}, "5%": {enganche: 1937, cuotas: {12: 3734, 18: 2739, 24: 2227, 36: 1784, 48: 1614, 60: 1556, 72: 1490}}, "30%": {enganche: 11624, cuotas: {12: 2650, 18: 1914, 24: 1533, 36: 1198, 48: 1063, 60: 1010, 72: 955}}, "15%": {enganche: 5812, cuotas: {12: 3521, 18: 2614, 24: 2173, 36: 1795, 48: 1660, 60: 1568, 72: 1518}} }, "MOTONOMINA": { "5%": {enganche: 1937, cuotas: {12: 3734, 18: 2739, 24: 2227, 36: 1784, 48: 1614, 60: 1556, 72: 1490}}, "30%": {enganche: 11624, cuotas: {12: 2650, 18: 1914, 24: 1533, 36: 1198, 48: 1063, 60: 1010, 72: 955}} }, "MOTOXPRESS": { "15%": {enganche: 5812, cuotas: {12: 3521, 18: 2614, 24: 2173, 36: 1795, 48: 1660, 60: 1568, 72: 1518}} }, "MSI": {precio: 38745} } },
+            "Custom Black": { lista: 43985, planes: { "CREDINAMO": { "50%": {enganche: 21992, cuotas: {12: 2231, 18: 1637, 24: 1330, 36: 1066, 48: 964, 60: 929, 72: 890}}, "10%": {enganche: 4398, cuotas: {12: 4116, 18: 3049, 24: 2502, 36: 2036, 48: 1864, 60: 1811, 72: 1747}}, "20%": {enganche: 8797, cuotas: {12: 3570, 18: 2619, 24: 2129, 36: 1706, 48: 1543, 60: 1487, 72: 1425}}, "5%": {enganche: 2199, cuotas: {12: 4239, 18: 3110, 24: 2528, 36: 2025, 48: 1832, 60: 1766, 72: 1692}}, "30%": {enganche: 13195, cuotas: {12: 3009, 18: 2173, 24: 1741, 36: 1360, 48: 1206, 60: 1146, 72: 1084}}, "15%": {enganche: 6598, cuotas: {12: 3997, 18: 2967, 24: 2467, 36: 2037, 48: 1884, 60: 1780, 72: 1724}} }, "MOTONOMINA": { "5%": {enganche: 2199, cuotas: {12: 4239, 18: 3110, 24: 2528, 36: 2025, 48: 1832, 60: 1766, 72: 1692}}, "30%": {enganche: 13195, cuotas: {12: 3009, 18: 2173, 24: 1741, 36: 1360, 48: 1206, 60: 1146, 72: 1084}} }, "MOTOXPRESS": { "15%": {enganche: 6598, cuotas: {12: 3997, 18: 2967, 24: 2467, 36: 2037, 48: 1884, 60: 1780, 72: 1724}} }, "MSI": {precio: 43985} } },
+            "Rayo": { lista: 42945, planes: { "CREDINAMO": { "50%": {enganche: 21473, cuotas: {12: 2178, 18: 1598, 24: 1299, 36: 1041, 48: 941, 60: 907, 72: 869}}, "10%": {enganche: 4295, cuotas: {12: 4019, 18: 2977, 24: 2443, 36: 1988, 48: 1819, 60: 1768, 72: 1706}}, "20%": {enganche: 8589, cuotas: {12: 3485, 18: 2557, 24: 2078, 36: 1665, 48: 1506, 60: 1452, 72: 1391}}, "5%": {enganche: 2147, cuotas: {12: 4139, 18: 3036, 24: 2468, 36: 1977, 48: 1789, 60: 1724, 72: 1652}}, "30%": {enganche: 12884, cuotas: {12: 2937, 18: 2122, 24: 1700, 36: 1328, 48: 1178, 60: 1119, 72: 1058}}, "15%": {enganche: 6442, cuotas: {12: 3903, 18: 2897, 24: 2409, 36: 1989, 48: 1840, 60: 1738, 72: 1683}} }, "MOTONOMINA": { "5%": {enganche: 2147, cuotas: {12: 4139, 18: 3036, 24: 2468, 36: 1977, 48: 1789, 60: 1724, 72: 1652}}, "30%": {enganche: 12884, cuotas: {12: 2937, 18: 2122, 24: 1700, 36: 1328, 48: 1178, 60: 1119, 72: 1058}} }, "MOTOXPRESS": { "15%": {enganche: 6442, cuotas: {12: 3903, 18: 2897, 24: 2409, 36: 1989, 48: 1840, 60: 1738, 72: 1683}} }, "MSI": {precio: 42945} } },
+            "Chopper": { lista: 38556, planes: { "CREDINAMO": { "50%": {enganche: 19278, cuotas: {12: 1956, 18: 1435, 24: 1166, 36: 934, 48: 845, 60: 815, 72: 781}}, "10%": {enganche: 3856, cuotas: {12: 3608, 18: 2673, 24: 2193, 36: 1785, 48: 1634, 60: 1587, 72: 1532}}, "20%": {enganche: 7711, cuotas: {12: 3129, 18: 2295, 24: 1866, 36: 1495, 48: 1352, 60: 1304, 72: 1249}}, "5%": {enganche: 1928, cuotas: {12: 3716, 18: 2726, 24: 2216, 36: 1775, 48: 1606, 60: 1548, 72: 1483}}, "30%": {enganche: 11567, cuotas: {12: 2637, 18: 1905, 24: 1526, 36: 1192, 48: 1057, 60: 1005, 72: 950}}, "15%": {enganche: 5783, cuotas: {12: 3504, 18: 2601, 24: 2162, 36: 1786, 48: 1652, 60: 1561, 72: 1511}} }, "MOTONOMINA": { "5%": {enganche: 1928, cuotas: {12: 3716, 18: 2726, 24: 2216, 36: 1775, 48: 1606, 60: 1548, 72: 1483}}, "30%": {enganche: 11567, cuotas: {12: 2637, 18: 1905, 24: 1526, 36: 1192, 48: 1057, 60: 1005, 72: 950}} }, "MOTOXPRESS": { "15%": {enganche: 5783, cuotas: {12: 3504, 18: 2601, 24: 2162, 36: 1786, 48: 1652, 60: 1561, 72: 1511}} }, "MSI": {precio: 38556} } },
+            "Renegada": { lista: 51650, planes: { "CREDINAMO": { "50%": {enganche: 25825, cuotas: {12: 2620, 18: 1922, 24: 1562, 36: 1252, 48: 1132, 60: 1091, 72: 1046}}, "10%": {enganche: 5165, cuotas: {12: 4833, 18: 3581, 24: 2938, 36: 2391, 48: 2188, 60: 2126, 72: 2052}}, "20%": {enganche: 10330, cuotas: {12: 4192, 18: 3075, 24: 2499, 36: 2003, 48: 1811, 60: 1746, 72: 1673}}, "5%": {enganche: 2582, cuotas: {12: 4978, 18: 3651, 24: 2968, 36: 2378, 48: 2151, 60: 2074, 72: 1987}}, "30%": {enganche: 15495, cuotas: {12: 3533, 18: 2552, 24: 2044, 36: 1597, 48: 1416, 60: 1346, 72: 1273}}, "15%": {enganche: 7747, cuotas: {12: 4694, 18: 3485, 24: 2897, 36: 2392, 48: 2213, 60: 2091, 72: 2024}} }, "MOTONOMINA": { "5%": {enganche: 2582, cuotas: {12: 4978, 18: 3651, 24: 2968, 36: 2378, 48: 2151, 60: 2074, 72: 1987}}, "30%": {enganche: 15495, cuotas: {12: 3533, 18: 2552, 24: 2044, 36: 1597, 48: 1416, 60: 1346, 72: 1273}} }, "MOTOXPRESS": { "15%": {enganche: 7747, cuotas: {12: 4694, 18: 3485, 24: 2897, 36: 2392, 48: 2213, 60: 2091, 72: 2024}} }, "MSI": {precio: 51650} } },
+            "Scorpion XT": { lista: 41895, planes: { "CREDINAMO": { "50%": {enganche: 20948, cuotas: {12: 2125, 18: 1559, 24: 1267, 36: 1015, 48: 918, 60: 885, 72: 848}}, "10%": {enganche: 4190, cuotas: {12: 3920, 18: 2905, 24: 2383, 36: 1940, 48: 1775, 60: 1725, 72: 1664}}, "20%": {enganche: 8379, cuotas: {12: 3400, 18: 2494, 24: 2027, 36: 1625, 48: 1469, 60: 1416, 72: 1357}}, "5%": {enganche: 2095, cuotas: {12: 4038, 18: 2962, 24: 2408, 36: 1929, 48: 1745, 60: 1682, 72: 1611}}, "30%": {enganche: 12569, cuotas: {12: 2866, 18: 2070, 24: 1658, 36: 1296, 48: 1149, 60: 1092, 72: 1033}}, "15%": {enganche: 6284, cuotas: {12: 3807, 18: 2826, 24: 2350, 36: 1941, 48: 1795, 60: 1696, 72: 1642}} }, "MOTONOMINA": { "5%": {enganche: 2095, cuotas: {12: 4038, 18: 2962, 24: 2408, 36: 1929, 48: 1745, 60: 1682, 72: 1611}}, "30%": {enganche: 12569, cuotas: {12: 2866, 18: 2070, 24: 1658, 36: 1296, 48: 1149, 60: 1092, 72: 1033}} }, "MOTOXPRESS": { "15%": {enganche: 6284, cuotas: {12: 3807, 18: 2826, 24: 2350, 36: 1941, 48: 1795, 60: 1696, 72: 1642}} }, "MSI": {precio: 41895} } },
+            "Rayo Elite": { lista: 52805, planes: { "CREDINAMO": { "50%": {enganche: 26402, cuotas: {12: 2678, 18: 1965, 24: 1597, 36: 1280, 48: 1157, 60: 1116, 72: 1069}}, "10%": {enganche: 5280, cuotas: {12: 4941, 18: 3661, 24: 3004, 36: 2445, 48: 2237, 60: 2174, 72: 2098}}, "20%": {enganche: 10561, cuotas: {12: 4285, 18: 3144, 24: 2555, 36: 2048, 48: 1852, 60: 1785, 72: 1710}}, "5%": {enganche: 2640, cuotas: {12: 5089, 18: 3733, 24: 3034, 36: 2431, 48: 2199, 60: 2120, 72: 2031}}, "30%": {enganche: 15841, cuotas: {12: 3612, 18: 2609, 24: 2090, 36: 1633, 48: 1448, 60: 1376, 72: 1301}}, "15%": {enganche: 7921, cuotas: {12: 4799, 18: 3562, 24: 2962, 36: 2446, 48: 2262, 60: 2137, 72: 2069}} }, "MOTONOMINA": { "5%": {enganche: 2640, cuotas: {12: 5089, 18: 3733, 24: 3034, 36: 2431, 48: 2199, 60: 2120, 72: 2031}}, "30%": {enganche: 15841, cuotas: {12: 3612, 18: 2609, 24: 2090, 36: 1633, 48: 1448, 60: 1376, 72: 1301}} }, "MOTOXPRESS": { "15%": {enganche: 7921, cuotas: {12: 4799, 18: 3562, 24: 2962, 36: 2446, 48: 2262, 60: 2137, 72: 2069}} }, "MSI": {precio: 52805} } },
+            "R2 GT": { lista: 55010, planes: { "CREDINAMO": { "50%": {enganche: 27505, cuotas: {12: 2790, 18: 2047, 24: 1664, 36: 1333, 48: 1206, 60: 1162, 72: 1114}}, "10%": {enganche: 5501, cuotas: {12: 5148, 18: 3814, 24: 3129, 36: 2547, 48: 2331, 60: 2265, 72: 2185}}, "20%": {enganche: 11002, cuotas: {12: 4464, 18: 3275, 24: 2662, 36: 2133, 48: 1929, 60: 1860, 72: 1782}}, "5%": {enganche: 2750, cuotas: {12: 5302, 18: 3889, 24: 3161, 36: 2533, 48: 2291, 60: 2208, 72: 2116}}, "30%": {enganche: 16503, cuotas: {12: 3763, 18: 2718, 24: 2177, 36: 1701, 48: 1509, 60: 1434, 72: 1356}}, "15%": {enganche: 8251, cuotas: {12: 4999, 18: 3711, 24: 3085, 36: 2548, 48: 2357, 60: 2227, 72: 2156}} }, "MOTONOMINA": { "5%": {enganche: 2750, cuotas: {12: 5302, 18: 3889, 24: 3161, 36: 2533, 48: 2291, 60: 2208, 72: 2116}}, "30%": {enganche: 16503, cuotas: {12: 3763, 18: 2718, 24: 2177, 36: 1701, 48: 1509, 60: 1434, 72: 1356}} }, "MOTOXPRESS": { "15%": {enganche: 8251, cuotas: {12: 4999, 18: 3711, 24: 3085, 36: 2548, 48: 2357, 60: 2227, 72: 2156}} }, "MSI": {precio: 55010} } },
+            "SpeedFire": { lista: 56060, planes: { "CREDINAMO": { "50%": {enganche: 28030, cuotas: {12: 2844, 18: 2086, 24: 1696, 36: 1359, 48: 1229, 60: 1185, 72: 1135}}, "10%": {enganche: 5606, cuotas: {12: 5246, 18: 3887, 24: 3189, 36: 2595, 48: 2375, 60: 2308, 72: 2227}}, "20%": {enganche: 11212, cuotas: {12: 4550, 18: 3337, 24: 2713, 36: 2174, 48: 1966, 60: 1895, 72: 1816}}, "5%": {enganche: 2803, cuotas: {12: 5403, 18: 3963, 24: 3222, 36: 2581, 48: 2335, 60: 2251, 72: 2156}}, "30%": {enganche: 16818, cuotas: {12: 3835, 18: 2770, 24: 2219, 36: 1734, 48: 1537, 60: 1461, 72: 1382}}, "15%": {enganche: 8409, cuotas: {12: 5095, 18: 3782, 24: 3144, 36: 2597, 48: 2402, 60: 2269, 72: 2197}} }, "MOTONOMINA": { "5%": {enganche: 2803, cuotas: {12: 5403, 18: 3963, 24: 3222, 36: 2581, 48: 2335, 60: 2251, 72: 2156}}, "30%": {enganche: 16818, cuotas: {12: 3835, 18: 2770, 24: 2219, 36: 1734, 48: 1537, 60: 1461, 72: 1382}} }, "MOTOXPRESS": { "15%": {enganche: 8409, cuotas: {12: 5095, 18: 3782, 24: 3144, 36: 2597, 48: 2402, 60: 2269, 72: 2197}} }, "MSI": {precio: 56060} } },
+            "DNM 2.5": { lista: 61520, planes: { "CREDINAMO": { "50%": {enganche: 30760, cuotas: {12: 3120, 18: 2289, 24: 1861, 36: 1491, 48: 1349, 60: 1300, 72: 1245}}, "10%": {enganche: 6152, cuotas: {12: 5757, 18: 4265, 24: 3500, 36: 2848, 48: 2606, 60: 2533, 72: 2444}}, "20%": {enganche: 12304, cuotas: {12: 4993, 18: 3662, 24: 2977, 36: 2385, 48: 2158, 60: 2080, 72: 1993}}, "5%": {enganche: 3076, cuotas: {12: 5929, 18: 4349, 24: 3535, 36: 2833, 48: 2562, 60: 2470, 72: 2366}}, "30%": {enganche: 18456, cuotas: {12: 4208, 18: 3040, 24: 2435, 36: 1902, 48: 1687, 60: 1603, 72: 1516}}, "15%": {enganche: 9228, cuotas: {12: 5591, 18: 4150, 24: 3450, 36: 2850, 48: 2636, 60: 2490, 72: 2411}} }, "MOTONOMINA": { "5%": {enganche: 3076, cuotas: {12: 5929, 18: 4349, 24: 3535, 36: 2833, 48: 2562, 60: 2470, 72: 2366}}, "30%": {enganche: 18456, cuotas: {12: 4208, 18: 3040, 24: 2435, 36: 1902, 48: 1687, 60: 1603, 72: 1516}} }, "MOTOXPRESS": { "15%": {enganche: 9228, cuotas: {12: 5591, 18: 4150, 24: 3450, 36: 2850, 48: 2636, 60: 2490, 72: 2411}} }, "MSI": {precio: 61520} } },
+            "R4": { lista: 55335, planes: { "CREDINAMO": { "50%": {enganche: 27668, cuotas: {12: 2807, 18: 2059, 24: 1674, 36: 1341, 48: 1213, 60: 1169, 72: 1120}}, "10%": {enganche: 5534, cuotas: {12: 5178, 18: 3836, 24: 3148, 36: 2562, 48: 2344, 60: 2278, 72: 2198}}, "20%": {enganche: 11067, cuotas: {12: 4491, 18: 3294, 24: 2678, 36: 2146, 48: 1941, 60: 1871, 72: 1792}}, "5%": {enganche: 2767, cuotas: {12: 5333, 18: 3912, 24: 3180, 36: 2548, 48: 2305, 60: 2222, 72: 2128}}, "30%": {enganche: 16601, cuotas: {12: 3785, 18: 2734, 24: 2190, 36: 1711, 48: 1518, 60: 1442, 72: 1364}}, "15%": {enganche: 8300, cuotas: {12: 5029, 18: 3733, 24: 3103, 36: 2563, 48: 2371, 60: 2240, 72: 2169}} }, "MOTONOMINA": { "5%": {enganche: 2767, cuotas: {12: 5333, 18: 3912, 24: 3180, 36: 2548, 48: 2305, 60: 2222, 72: 2128}}, "30%": {enganche: 16601, cuotas: {12: 3785, 18: 2734, 24: 2190, 36: 1711, 48: 1518, 60: 1442, 72: 1364}} }, "MOTOXPRESS": { "15%": {enganche: 8300, cuotas: {12: 5029, 18: 3733, 24: 3103, 36: 2563, 48: 2371, 60: 2240, 72: 2169}} }, "MSI": {precio: 55335} } },
+            "Heavy Cab B": { lista: 62895, planes: { "CREDINAMO": { "50%": {enganche: 31448, cuotas: {12: 3190, 18: 2340, 24: 1902, 36: 1524, 48: 1379, 60: 1329, 72: 1273}}, "10%": {enganche: 6290, cuotas: {12: 5886, 18: 4361, 24: 3578, 36: 2912, 48: 2665, 60: 2589, 72: 2498}}, "20%": {enganche: 12579, cuotas: {12: 5104, 18: 3744, 24: 3044, 36: 2439, 48: 2206, 60: 2126, 72: 2037}}, "5%": {enganche: 3145, cuotas: {12: 6061, 18: 4446, 24: 3614, 36: 2896, 48: 2619, 60: 2525, 72: 2419}}, "30%": {enganche: 18869, cuotas: {12: 4302, 18: 3107, 24: 2489, 36: 1945, 48: 1725, 60: 1639, 72: 1550}}, "15%": {enganche: 9434, cuotas: {12: 5716, 18: 4243, 24: 3527, 36: 2913, 48: 2695, 60: 2546, 72: 2465}} }, "MOTONOMINA": { "5%": {enganche: 3145, cuotas: {12: 6061, 18: 4446, 24: 3614, 36: 2896, 48: 2619, 60: 2525, 72: 2419}}, "30%": {enganche: 18869, cuotas: {12: 4302, 18: 3107, 24: 2489, 36: 1945, 48: 1725, 60: 1639, 72: 1550}} }, "MOTOXPRESS": { "15%": {enganche: 9434, cuotas: {12: 5716, 18: 4243, 24: 3527, 36: 2913, 48: 2695, 60: 2546, 72: 2465}} }, "MSI": {precio: 62895} } },
+            "Xtreme RLX": { lista: 57645, planes: { "CREDINAMO": { "50%": {enganche: 28823, cuotas: {12: 2924, 18: 2145, 24: 1743, 36: 1397, 48: 1264, 60: 1218, 72: 1167}}, "10%": {enganche: 5765, cuotas: {12: 5394, 18: 3997, 24: 3279, 36: 2669, 48: 2442, 60: 2373, 72: 2290}}, "20%": {enganche: 11529, cuotas: {12: 4678, 18: 3432, 24: 2790, 36: 2235, 48: 2022, 60: 1949, 72: 1867}}, "5%": {enganche: 2882, cuotas: {12: 5555, 18: 4075, 24: 3313, 36: 2654, 48: 2401, 60: 2314, 72: 2217}}, "30%": {enganche: 17294, cuotas: {12: 3943, 18: 2848, 24: 2281, 36: 1783, 48: 1581, 60: 1502, 72: 1421}}, "15%": {enganche: 8647, cuotas: {12: 5239, 18: 3889, 24: 3233, 36: 2670, 48: 2470, 60: 2333, 72: 2259}} }, "MOTONOMINA": { "5%": {enganche: 2882, cuotas: {12: 5555, 18: 4075, 24: 3313, 36: 2654, 48: 2401, 60: 2314, 72: 2217}}, "30%": {enganche: 17294, cuotas: {12: 3943, 18: 2848, 24: 2281, 36: 1783, 48: 1581, 60: 1502, 72: 1421}} }, "MOTOXPRESS": { "15%": {enganche: 8647, cuotas: {12: 5239, 18: 3889, 24: 3233, 36: 2670, 48: 2470, 60: 2333, 72: 2259}} }, "MSI": {precio: 57645} } },
+            "Goliat": { lista: 78110, planes: { "CREDINAMO": { "50%": {enganche: 39055, cuotas: {12: 3962, 18: 2906, 24: 2362, 36: 1893, 48: 1712, 60: 1650, 72: 1581}}, "10%": {enganche: 7811, cuotas: {12: 7309, 18: 5415, 24: 4443, 36: 3616, 48: 3309, 60: 3216, 72: 3103}}, "20%": {enganche: 15622, cuotas: {12: 6339, 18: 4650, 24: 3780, 36: 3029, 48: 2739, 60: 2641, 72: 2530}}, "5%": {enganche: 3905, cuotas: {12: 7528, 18: 5522, 24: 4489, 36: 3597, 48: 3253, 60: 3136, 72: 3004}}, "30%": {enganche: 23433, cuotas: {12: 5343, 18: 3859, 24: 3091, 36: 2415, 48: 2142, 60: 2036, 72: 1925}}, "15%": {enganche: 11716, cuotas: {12: 7098, 18: 5270, 24: 4381, 36: 3618, 48: 3346, 60: 3162, 72: 3061}} }, "MOTONOMINA": { "5%": {enganche: 3905, cuotas: {12: 7528, 18: 5522, 24: 4489, 36: 3597, 48: 3253, 60: 3136, 72: 3004}}, "30%": {enganche: 23433, cuotas: {12: 5343, 18: 3859, 24: 3091, 36: 2415, 48: 2142, 60: 2036, 72: 1925}} }, "MOTOXPRESS": { "15%": {enganche: 11716, cuotas: {12: 7098, 18: 5270, 24: 4381, 36: 3618, 48: 3346, 60: 3162, 72: 3061}} }, "MSI": {precio: 78110} } },
+            "B-52": { lista: 68145, planes: { "CREDINAMO": { "50%": {enganche: 34073, cuotas: {12: 3457, 18: 2536, 24: 2061, 36: 1651, 48: 1494, 60: 1440, 72: 1380}}, "10%": {enganche: 6815, cuotas: {12: 6377, 18: 4725, 24: 3876, 36: 3155, 48: 2887, 60: 2805, 72: 2707}}, "20%": {enganche: 13629, cuotas: {12: 5530, 18: 4057, 24: 3298, 36: 2642, 48: 2390, 60: 2304, 72: 2207}}, "5%": {enganche: 3407, cuotas: {12: 6567, 18: 4818, 24: 3916, 36: 3138, 48: 2838, 60: 2736, 72: 2621}}, "30%": {enganche: 20444, cuotas: {12: 4661, 18: 3367, 24: 2697, 36: 2107, 48: 1869, 60: 1776, 72: 1680}}, "15%": {enganche: 10222, cuotas: {12: 6193, 18: 4597, 24: 3822, 36: 3156, 48: 2920, 60: 2758, 72: 2671}} }, "MOTONOMINA": { "5%": {enganche: 3407, cuotas: {12: 6567, 18: 4818, 24: 3916, 36: 3138, 48: 2838, 60: 2736, 72: 2621}}, "30%": {enganche: 20444, cuotas: {12: 4661, 18: 3367, 24: 2697, 36: 2107, 48: 1869, 60: 1776, 72: 1680}} }, "MOTOXPRESS": { "15%": {enganche: 10222, cuotas: {12: 6193, 18: 4597, 24: 3822, 36: 3156, 48: 2920, 60: 2758, 72: 2671}} }, "MSI": {precio: 68145} } },
+            "Super Sport": { lista: 80315, planes: { "CREDINAMO": { "50%": {enganche: 40157, cuotas: {12: 4074, 18: 2988, 24: 2429, 36: 1946, 48: 1761, 60: 1697, 72: 1626}}, "10%": {enganche: 8031, cuotas: {12: 7516, 18: 5568, 24: 4569, 36: 3718, 48: 3403, 60: 3306, 72: 3190}}, "20%": {enganche: 16063, cuotas: {12: 6518, 18: 4781, 24: 3887, 36: 3114, 48: 2817, 60: 2715, 72: 2602}}, "5%": {enganche: 4016, cuotas: {12: 7740, 18: 5678, 24: 4615, 36: 3698, 48: 3345, 60: 3224, 72: 3089}}, "30%": {enganche: 24094, cuotas: {12: 5494, 18: 3968, 24: 3178, 36: 2484, 48: 2203, 60: 2093, 72: 1980}}, "15%": {enganche: 12047, cuotas: {12: 7299, 18: 5418, 24: 4504, 36: 3720, 48: 3441, 60: 3251, 72: 3147}} }, "MOTONOMINA": { "5%": {enganche: 4016, cuotas: {12: 7740, 18: 5678, 24: 4615, 36: 3698, 48: 3345, 60: 3224, 72: 3089}}, "30%": {enganche: 24094, cuotas: {12: 5494, 18: 3968, 24: 3178, 36: 2484, 48: 2203, 60: 2093, 72: 1980}} }, "MOTOXPRESS": { "15%": {enganche: 12047, cuotas: {12: 7299, 18: 5418, 24: 4504, 36: 3720, 48: 3441, 60: 3251, 72: 3147}} }, "MSI": {precio: 80315} } },
+            "Heavy Cab R": { lista: 69195, planes: { "CREDINAMO": { "50%": {enganche: 34598, cuotas: {12: 3510, 18: 2575, 24: 2093, 36: 1677, 48: 1517, 60: 1462, 72: 1401}}, "10%": {enganche: 6920, cuotas: {12: 6475, 18: 4797, 24: 3936, 36: 3203, 48: 2932, 60: 2849, 72: 2749}}, "20%": {enganche: 13839, cuotas: {12: 5616, 18: 4119, 24: 3349, 36: 2683, 48: 2427, 60: 2339, 72: 2241}}, "5%": {enganche: 3460, cuotas: {12: 6669, 18: 4892, 24: 3976, 36: 3186, 48: 2882, 60: 2778, 72: 2662}}, "30%": {enganche: 20759, cuotas: {12: 4733, 18: 3419, 24: 2738, 36: 2140, 48: 1898, 60: 1803, 72: 1705}}, "15%": {enganche: 10379, cuotas: {12: 6288, 18: 4668, 24: 3881, 36: 3205, 48: 2965, 60: 2801, 72: 2712}} }, "MOTONOMINA": { "5%": {enganche: 3460, cuotas: {12: 6669, 18: 4892, 24: 3976, 36: 3186, 48: 2882, 60: 2778, 72: 2662}}, "30%": {enganche: 20759, cuotas: {12: 4733, 18: 3419, 24: 2738, 36: 2140, 48: 1898, 60: 1803, 72: 1705}} }, "MOTOXPRESS": { "15%": {enganche: 10379, cuotas: {12: 6288, 18: 4668, 24: 3881, 36: 3205, 48: 2965, 60: 2801, 72: 2712}} }, "MSI": {precio: 69195} } },
+            "DNM 3.0": { lista: 83675, planes: { "CREDINAMO": { "50%": {enganche: 41837, cuotas: {12: 4244, 18: 3113, 24: 2531, 36: 2028, 48: 1834, 60: 1768, 72: 1694}}, "10%": {enganche: 8367, cuotas: {12: 7830, 18: 5801, 24: 4760, 36: 3874, 48: 3545, 60: 3445, 72: 3324}}, "20%": {enganche: 16735, cuotas: {12: 6791, 18: 4981, 24: 4049, 36: 3245, 48: 2935, 60: 2829, 72: 2710}}, "5%": {enganche: 4184, cuotas: {12: 8064, 18: 5915, 24: 4808, 36: 3853, 48: 3485, 60: 3359, 72: 3219}}, "30%": {enganche: 25102, cuotas: {12: 5723, 18: 4134, 24: 3311, 36: 2587, 48: 2295, 60: 2181, 72: 2062}}, "15%": {enganche: 12551, cuotas: {12: 7604, 18: 5645, 24: 4693, 36: 3876, 48: 3585, 60: 3387, 72: 3279}} }, "MOTONOMINA": { "5%": {enganche: 4184, cuotas: {12: 8064, 18: 5915, 24: 4808, 36: 3853, 48: 3485, 60: 3359, 72: 3219}}, "30%": {enganche: 25102, cuotas: {12: 5723, 18: 4134, 24: 3311, 36: 2587, 48: 2295, 60: 2181, 72: 2062}} }, "MOTOXPRESS": { "15%": {enganche: 12551, cuotas: {12: 7604, 18: 5645, 24: 4693, 36: 3876, 48: 3585, 60: 3387, 72: 3279}} }, "MSI": {precio: 83675} } },
+            "Comando": { lista: 83895, planes: { "CREDINAMO": { "50%": {enganche: 41948, cuotas: {12: 4255, 18: 3122, 24: 2537, 36: 2033, 48: 1839, 60: 1773, 72: 1698}}, "10%": {enganche: 8390, cuotas: {12: 7851, 18: 5817, 24: 4772, 36: 3884, 48: 3554, 60: 3454, 72: 3333}}, "20%": {enganche: 16779, cuotas: {12: 6809, 18: 4995, 24: 4060, 36: 3253, 48: 2942, 60: 2836, 72: 2717}}, "5%": {enganche: 4195, cuotas: {12: 8085, 18: 5931, 24: 4821, 36: 3863, 48: 3494, 60: 3368, 72: 3227}}, "30%": {enganche: 25169, cuotas: {12: 5739, 18: 4145, 24: 3320, 36: 2594, 48: 2301, 60: 2187, 72: 2068}}, "15%": {enganche: 12584, cuotas: {12: 7624, 18: 5660, 24: 4705, 36: 3886, 48: 3594, 60: 3396, 72: 3288}} }, "MOTONOMINA": { "5%": {enganche: 4195, cuotas: {12: 8085, 18: 5931, 24: 4821, 36: 3863, 48: 3494, 60: 3368, 72: 3227}}, "30%": {enganche: 25169, cuotas: {12: 5739, 18: 4145, 24: 3320, 36: 2594, 48: 2301, 60: 2187, 72: 2068}} }, "MOTOXPRESS": { "15%": {enganche: 12584, cuotas: {12: 7624, 18: 5660, 24: 4705, 36: 3886, 48: 3594, 60: 3396, 72: 3288}} }, "MSI": {precio: 83895} } },
+            "Moto TX": { lista: 85995, planes: { "CREDINAMO": { "50%": {enganche: 42998, cuotas: {12: 4362, 18: 3200, 24: 2601, 36: 2084, 48: 1885, 60: 1817, 72: 1741}}, "10%": {enganche: 8600, cuotas: {12: 8047, 18: 5962, 24: 4892, 36: 3981, 48: 3643, 60: 3540, 72: 3416}}, "20%": {enganche: 17199, cuotas: {12: 6979, 18: 5120, 24: 4161, 36: 3335, 48: 3016, 60: 2907, 72: 2786}}, "5%": {enganche: 4300, cuotas: {12: 8288, 18: 6080, 24: 4942, 36: 3960, 48: 3582, 60: 3452, 72: 3308}}, "30%": {enganche: 25799, cuotas: {12: 5882, 18: 4249, 24: 3403, 36: 2659, 48: 2358, 60: 2241, 72: 2120}}, "15%": {enganche: 12899, cuotas: {12: 7815, 18: 5802, 24: 4823, 36: 3983, 48: 3684, 60: 3481, 72: 3370}} }, "MOTONOMINA": { "5%": {enganche: 4300, cuotas: {12: 8288, 18: 6080, 24: 4942, 36: 3960, 48: 3582, 60: 3452, 72: 3308}}, "30%": {enganche: 25799, cuotas: {12: 5882, 18: 4249, 24: 3403, 36: 2659, 48: 2358, 60: 2241, 72: 2120}} }, "MOTOXPRESS": { "15%": {enganche: 12899, cuotas: {12: 7815, 18: 5802, 24: 4823, 36: 3983, 48: 3684, 60: 3481, 72: 3370}} }, "MSI": {precio: 85995} } },
+            "Heavy MAX": { lista: 94395, planes: { "CREDINAMO": { "50%": {enganche: 47198, cuotas: {12: 4788, 18: 3512, 24: 2855, 36: 2288, 48: 2069, 60: 1995, 72: 1911}}, "10%": {enganche: 9440, cuotas: {12: 8833, 18: 6544, 24: 5370, 36: 4370, 48: 3999, 60: 3886, 72: 3750}}, "20%": {enganche: 18879, cuotas: {12: 7661, 18: 5620, 24: 4568, 36: 3660, 48: 3311, 60: 3191, 72: 3058}}, "5%": {enganche: 4720, cuotas: {12: 9097, 18: 6673, 24: 5424, 36: 4347, 48: 3931, 60: 3790, 72: 3631}}, "30%": {enganche: 28319, cuotas: {12: 6457, 18: 4664, 24: 3736, 36: 2919, 48: 2589, 60: 2460, 72: 2327}}, "15%": {enganche: 14159, cuotas: {12: 8578, 18: 6368, 24: 5294, 36: 4372, 48: 4044, 60: 3821, 72: 3699}} }, "MOTONOMINA": { "5%": {enganche: 4720, cuotas: {12: 9097, 18: 6673, 24: 5424, 36: 4347, 48: 3931, 60: 3790, 72: 3631}}, "30%": {enganche: 28319, cuotas: {12: 6457, 18: 4664, 24: 3736, 36: 2919, 48: 2589, 60: 2460, 72: 2327}} }, "MOTOXPRESS": { "15%": {enganche: 14159, cuotas: {12: 8578, 18: 6368, 24: 5294, 36: 4372, 48: 4044, 60: 3821, 72: 3699}} }, "MSI": {precio: 94395} } },
+            "Bandid": { lista: 83895, planes: { "CREDINAMO": { "50%": {enganche: 41948, cuotas: {12: 4255, 18: 3122, 24: 2537, 36: 2033, 48: 1839, 60: 1773, 72: 1698}}, "10%": {enganche: 8390, cuotas: {12: 7851, 18: 5817, 24: 4772, 36: 3884, 48: 3554, 60: 3454, 72: 3333}}, "20%": {enganche: 16779, cuotas: {12: 6809, 18: 4995, 24: 4060, 36: 3253, 48: 2942, 60: 2836, 72: 2717}}, "5%": {enganche: 4195, cuotas: {12: 8085, 18: 5931, 24: 4821, 36: 3863, 48: 3494, 60: 3368, 72: 3227}}, "30%": {enganche: 25169, cuotas: {12: 5739, 18: 4145, 24: 3320, 36: 2594, 48: 2301, 60: 2187, 72: 2068}}, "15%": {enganche: 12584, cuotas: {12: 7624, 18: 5660, 24: 4705, 36: 3886, 48: 3594, 60: 3396, 72: 3288}} }, "MOTONOMINA": { "5%": {enganche: 4195, cuotas: {12: 8085, 18: 5931, 24: 4821, 36: 3863, 48: 3494, 60: 3368, 72: 3227}}, "30%": {enganche: 25169, cuotas: {12: 5739, 18: 4145, 24: 3320, 36: 2594, 48: 2301, 60: 2187, 72: 2068}} }, "MOTOXPRESS": { "15%": {enganche: 12584, cuotas: {12: 7624, 18: 5660, 24: 4705, 36: 3886, 48: 3594, 60: 3396, 72: 3288}} }, "MSI": {precio: 83895} } },
+            "Heavy Cab 300": { lista: 90195, planes: { "CREDINAMO": { "50%": {enganche: 45098, cuotas: {12: 4575, 18: 3356, 24: 2728, 36: 2186, 48: 1977, 60: 1906, 72: 1826}}, "10%": {enganche: 9020, cuotas: {12: 8440, 18: 6253, 24: 5131, 36: 4176, 48: 3821, 60: 3713, 72: 3583}}, "20%": {enganche: 18039, cuotas: {12: 7320, 18: 5370, 24: 4365, 36: 3497, 48: 3163, 60: 3049, 72: 2922}}, "5%": {enganche: 4510, cuotas: {12: 8692, 18: 6376, 24: 5183, 36: 4153, 48: 3756, 60: 3621, 72: 3469}}, "30%": {enganche: 27059, cuotas: {12: 6169, 18: 4456, 24: 3569, 36: 2789, 48: 2473, 60: 2351, 72: 2223}}, "15%": {enganche: 13529, cuotas: {12: 8197, 18: 6085, 24: 5059, 36: 4178, 48: 3864, 60: 3651, 72: 3535}} }, "MOTONOMINA": { "5%": {enganche: 4510, cuotas: {12: 8692, 18: 6376, 24: 5183, 36: 4153, 48: 3756, 60: 3621, 72: 3469}}, "30%": {enganche: 27059, cuotas: {12: 6169, 18: 4456, 24: 3569, 36: 2789, 48: 2473, 60: 2351, 72: 2223}} }, "MOTOXPRESS": { "15%": {enganche: 13529, cuotas: {12: 8197, 18: 6085, 24: 5059, 36: 4178, 48: 3864, 60: 3651, 72: 3535}} }, "MSI": {precio: 90195} } },
+            "DNM-4": { lista: 75905, planes: { "CREDINAMO": { "50%": {enganche: 37952, cuotas: {12: 3850, 18: 2824, 24: 2296, 36: 1840, 48: 1664, 60: 1604, 72: 1537}}, "10%": {enganche: 7590, cuotas: {12: 7103, 18: 5263, 24: 4318, 36: 3514, 48: 3216, 60: 3125, 72: 3015}}, "20%": {enganche: 15181, cuotas: {12: 6160, 18: 4519, 24: 3673, 36: 2943, 48: 2662, 60: 2566, 72: 2459}}, "5%": {enganche: 3795, cuotas: {12: 7315, 18: 5366, 24: 4362, 36: 3495, 48: 3161, 60: 3047, 72: 2920}}, "30%": {enganche: 22771, cuotas: {12: 5192, 18: 3750, 24: 3004, 36: 2347, 48: 2082, 60: 1978, 72: 1871}}, "15%": {enganche: 11386, cuotas: {12: 6898, 18: 5121, 24: 4257, 36: 3516, 48: 3252, 60: 3073, 72: 2975}} }, "MOTONOMINA": { "5%": {enganche: 3795, cuotas: {12: 7315, 18: 5366, 24: 4362, 36: 3495, 48: 3161, 60: 3047, 72: 2920}}, "30%": {enganche: 22771, cuotas: {12: 5192, 18: 3750, 24: 3004, 36: 2347, 48: 2082, 60: 1978, 72: 1871}} }, "MOTOXPRESS": { "15%": {enganche: 11386, cuotas: {12: 6898, 18: 5121, 24: 4257, 36: 3516, 48: 3252, 60: 3073, 72: 2975}} }, "MSI": {precio: 75905} } },
+            "Skeleton": { lista: 81470, planes: { "CREDINAMO": { "50%": {enganche: 40735, cuotas: {12: 4132, 18: 3031, 24: 2464, 36: 1974, 48: 1786, 60: 1721, 72: 1649}}, "10%": {enganche: 8147, cuotas: {12: 7624, 18: 5648, 24: 4634, 36: 3772, 48: 3452, 60: 3354, 72: 3236}}, "20%": {enganche: 16294, cuotas: {12: 6612, 18: 4850, 24: 3942, 36: 3159, 48: 2857, 60: 2754, 72: 2639}}, "5%": {enganche: 4073, cuotas: {12: 7852, 18: 5760, 24: 4682, 36: 3751, 48: 3393, 60: 3271, 72: 3134}}, "30%": {enganche: 24441, cuotas: {12: 5573, 18: 4025, 24: 3224, 36: 2519, 48: 2234, 60: 2123, 72: 2008}}, "15%": {enganche: 12220, cuotas: {12: 7404, 18: 5496, 24: 4569, 36: 3774, 48: 3490, 60: 3298, 72: 3193}} }, "MOTONOMINA": { "5%": {enganche: 4073, cuotas: {12: 7852, 18: 5760, 24: 4682, 36: 3751, 48: 3393, 60: 3271, 72: 3134}}, "30%": {enganche: 24441, cuotas: {12: 5573, 18: 4025, 24: 3224, 36: 2519, 48: 2234, 60: 2123, 72: 2008}} }, "MOTOXPRESS": { "15%": {enganche: 12220, cuotas: {12: 7404, 18: 5496, 24: 4569, 36: 3774, 48: 3490, 60: 3298, 72: 3193}} }, "MSI": {precio: 81470} } }
+        };
+
+        const select = document.getElementById('modeloSelect');
+        const creditoGroup = document.getElementById('creditoGroup');
+        const engancheSection = document.getElementById('engancheSection');
+        const engancheGroup = document.getElementById('engancheGroup');
+        const plazoSection = document.getElementById('plazoSection');
+        const plazoGroup = document.getElementById('plazoGroup');
+        const cotizacionContainer = document.getElementById('cotizacionContainer');
+        const motoPreview = document.getElementById('motoPreview');
+
+        let modeloSeleccionado = '';
+        let creditoSeleccionado = '';
+        let engancheSeleccionado = '';
+        let plazoSeleccionado = '';
+
+        // Cargar modelos
+        Object.keys(datos).sort().forEach(modelo => {
+            const option = document.createElement('option');
+            option.value = modelo;
+            option.textContent = modelo;
+            select.appendChild(option);
+        });
+
+        select.addEventListener('change', function() {
+            modeloSeleccionado = this.value;
+            creditoSeleccionado = '';
+            engancheSeleccionado = '';
+            plazoSeleccionado = '';
+            
+            if (modeloSeleccionado && motoData[modeloSeleccionado]) {
+                const moto = motoData[modeloSeleccionado];
+                motoPreview.innerHTML = `
+                    <div class="moto-preview">
+                        <img src="${moto.imagen}" alt="${modeloSeleccionado}" style="width: 80px; height: 80px;">
+                        <div class="moto-info">
+                            <div class="moto-info-title">${modeloSeleccionado}</div>
+                            <div class="moto-info-desc">${moto.desc}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            actualizarVista();
+        });
+
+        creditoGroup.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                creditoSeleccionado = this.dataset.credito;
+                engancheSeleccionado = '';
+                plazoSeleccionado = '';
+                actualizarVista();
+            });
+        });
+
+        function actualizarVista() {
+            document.querySelectorAll('#creditoGroup .btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#engancheGroup .btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#plazoGroup .btn').forEach(b => b.classList.remove('active'));
+            cotizacionContainer.innerHTML = '';
+
+            if (!modeloSeleccionado) return;
+
+            if (creditoSeleccionado) {
+                document.querySelectorAll('#creditoGroup .btn').forEach(b => {
+                    if (b.dataset.credito === creditoSeleccionado) b.classList.add('active');
+                });
+
+                const datosModelo = datos[modeloSeleccionado];
+                const planData = datosModelo.planes[creditoSeleccionado];
+                
+                engancheGroup.innerHTML = '';
+                
+                if (creditoSeleccionado === 'MSI') {
+                    engancheSection.classList.add('hidden');
+                    plazoSection.classList.add('hidden');
+                    mostrarCotizacionMSI();
+                } else {
+                    engancheSection.classList.remove('hidden');
+                    plazoSection.classList.remove('hidden');
+                    
+                    Object.keys(planData).forEach(enganche => {
+                        const btn = document.createElement('button');
+                        btn.className = 'btn';
+                        btn.textContent = enganche;
+                        btn.addEventListener('click', function() {
+                            engancheSeleccionado = enganche;
+                            actualizarPlazo();
+                        });
+                        engancheGroup.appendChild(btn);
+                    });
+                }
+            } else {
+                engancheSection.classList.add('hidden');
+                plazoSection.classList.add('hidden');
+            }
+        }
+
+        function actualizarPlazo() {
+            document.querySelectorAll('#engancheGroup .btn').forEach(b => b.classList.remove('active'));
+            plazoGroup.innerHTML = '';
+            cotizacionContainer.innerHTML = '';
+
+            if (engancheSeleccionado) {
+                document.querySelectorAll('#engancheGroup .btn').forEach(b => {
+                    if (b.textContent === engancheSeleccionado) b.classList.add('active');
+                });
+
+                const datosModelo = datos[modeloSeleccionado];
+                const cuotas = datosModelo.planes[creditoSeleccionado][engancheSeleccionado].cuotas;
+
+                Object.keys(cuotas).forEach(plazo => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn';
+                    btn.textContent = plazo + 'Q';
+                    btn.addEventListener('click', function() {
+                        plazoSeleccionado = plazo;
+                        mostrarCotizacion();
+                    });
+                    plazoGroup.appendChild(btn);
+                });
+            }
+        }
+
+        function mostrarCotizacion() {
+            document.querySelectorAll('#plazoGroup .btn').forEach(b => b.classList.remove('active'));
+            
+            if (plazoSeleccionado) {
+                document.querySelectorAll('#plazoGroup .btn').forEach(b => {
+                    if (b.textContent === plazoSeleccionado + 'Q') b.classList.add('active');
+                });
+
+                const datosModelo = datos[modeloSeleccionado];
+                const planData = datosModelo.planes[creditoSeleccionado][engancheSeleccionado];
+                const enganche = planData.enganche;
+                const cuota = planData.cuotas[plazoSeleccionado];
+                const totalQuincenas = parseInt(plazoSeleccionado);
+                const totalPagado = enganche + (cuota * totalQuincenas);
+
+                let html = `
+                    <div class="cotizacion">
+                        <h2>💰 Tu Cotización</h2>
+                        <div class="cotizacion-grid">
+                            <div class="cotizacion-item">
+                                <div class="cotizacion-label">Enganche</div>
+                                <div class="cotizacion-valor">$${enganche.toLocaleString('es-MX')}</div>
+                            </div>
+                            <div class="cotizacion-item">
+                                <div class="cotizacion-label">Cuota Quincenal</div>
+                                <div class="cotizacion-valor">$${cuota.toLocaleString('es-MX')}</div>
+                            </div>
+                            <div class="cotizacion-item">
+                                <div class="cotizacion-label">Total de Cuotas</div>
+                                <div class="cotizacion-valor">${totalQuincenas} (${(totalQuincenas / 2).toFixed(0)} meses)</div>
+                            </div>
+                            <div class="cotizacion-total">
+                                <span class="cotizacion-total-label">Precio Total</span>
+                                <span class="cotizacion-total-valor">$${totalPagado.toLocaleString('es-MX')}</span>
+                            </div>
+                        </div>
+                        <div class="cotizacion-actions">
+                            <button class="btn-action btn-whatsapp" onclick="enviarPorWhatsApp('${modeloSeleccionado}', '${creditoSeleccionado}', '${engancheSeleccionado}', '${plazoSeleccionado}', ${enganche}, ${cuota}, ${totalQuincenas}, ${totalPagado})">
+                                💬 WhatsApp
+                            </button>
+                            <button class="btn-action btn-email" onclick="enviarPorEmail('${modeloSeleccionado}', '${creditoSeleccionado}', '${engancheSeleccionado}', '${plazoSeleccionado}', ${enganche}, ${cuota}, ${totalQuincenas}, ${totalPagado})">
+                                📧 Email
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                cotizacionContainer.innerHTML = html;
+            }
+        }
+
+        function mostrarCotizacionMSI() {
+            const datosModelo = datos[modeloSeleccionado];
+            const precio = datosModelo.planes.MSI.precio;
+
+            let html = `
+                <div class="cotizacion">
+                    <h2>💳 Tu Cotización MSI</h2>
+                    <div class="cotizacion-grid">
+                        <div class="cotizacion-item">
+                            <div class="cotizacion-label">Precio de Contado</div>
+                            <div class="cotizacion-valor">$${precio.toLocaleString('es-MX')}</div>
+                        </div>
+                        <div class="cotizacion-total">
+                            <span class="cotizacion-total-label">Sin Intereses</span>
+                            <span class="cotizacion-total-valor">$${precio.toLocaleString('es-MX')}</span>
+                        </div>
+                    </div>
+                    <div class="cotizacion-actions">
+                        <button class="btn-action btn-whatsapp" onclick="enviarMSIPorWhatsApp('${modeloSeleccionado}', ${precio})">
+                            💬 WhatsApp
+                        </button>
+                        <button class="btn-action btn-email" onclick="enviarMSIPorEmail('${modeloSeleccionado}', ${precio})">
+                            📧 Email
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            cotizacionContainer.innerHTML = html;
+        }
+
+        // ===== WHATSAPP INTEGRATION =====
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const whatsappModal = document.getElementById('whatsappModal');
+        const whatsappClose = document.getElementById('whatsappClose');
+        const whatsappSendBtn = document.getElementById('whatsappSendBtn');
+        const whatsappName = document.getElementById('whatsappName');
+        const whatsappEmail = document.getElementById('whatsappEmail');
+        const whatsappMessage = document.getElementById('whatsappMessage');
+
+        // WhatsApp Number (DINAMO)
+        const DINAMO_WHATSAPP = '5212282364842'; // WhatsApp oficial DINAMO
+
+        whatsappBtn.addEventListener('click', () => {
+            whatsappModal.classList.toggle('hidden');
+        });
+
+        whatsappClose.addEventListener('click', () => {
+            whatsappModal.classList.add('hidden');
+        });
+
+        whatsappSendBtn.addEventListener('click', () => {
+            const nombre = whatsappName.value.trim();
+            const email = whatsappEmail.value.trim();
+            const mensaje = whatsappMessage.value.trim();
+
+            if (!nombre) {
+                alert('Por favor ingresa tu nombre');
+                whatsappName.focus();
+                return;
+            }
+
+            if (!mensaje) {
+                alert('Por favor escribe un mensaje');
+                whatsappMessage.focus();
+                return;
+            }
+
+            // Construir el mensaje con información de cotización
+            let cotizacionInfo = '';
+            if (modeloSeleccionado) {
+                cotizacionInfo = `\n\n📋 *Detalles de Cotización:*\n`;
+                cotizacionInfo += `🏍 *Modelo:* ${modeloSeleccionado}\n`;
+                if (creditoSeleccionado) {
+                    cotizacionInfo += `💳 *Financiamiento:* ${creditoSeleccionado}\n`;
+                }
+                if (engancheSeleccionado) {
+                    cotizacionInfo += `💰 *Enganche:* ${engancheSeleccionado}\n`;
+                }
+                if (plazoSeleccionado) {
+                    cotizacionInfo += `📅 *Plazo:* ${plazoSeleccionado} quincenas\n`;
+                }
+            }
+
+            const mensajeCompleto = `Hola DINAMO 👋\n\nMi nombre es: ${nombre}${email ? `\nCorreo: ${email}` : ''}\n\n📝 *Mensaje:*\n${mensaje}${cotizacionInfo}`;
+
+            // URL de WhatsApp
+            const whatsappURL = `https://wa.me/${DINAMO_WHATSAPP}?text=${encodeURIComponent(mensajeCompleto)}`;
+
+            // Abrir WhatsApp
+            window.open(whatsappURL, '_blank');
+
+            // Limpiar formulario
+            whatsappName.value = '';
+            whatsappEmail.value = '';
+            whatsappMessage.value = '';
+            whatsappModal.classList.add('hidden');
+        });
+
+        // Enter para enviar en textarea
+        whatsappMessage.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                whatsappSendBtn.click();
+            }
+        });
+
+        // Cerrar modal al hacer click fuera
+        document.addEventListener('click', (e) => {
+            if (!whatsappModal.contains(e.target) && e.target !== whatsappBtn) {
+                whatsappModal.classList.add('hidden');
+            }
+        });
+
+        // ===== FUNCIONES DE ENVÍO DE COTIZACIÓN =====
+
+        function enviarPorWhatsApp(modelo, credito, enganche, plazo, engancheVal, cuota, totalQuincenas, totalPagado) {
+            const mensaje = `🏍️ *COTIZACIÓN DINAMO*\n\n` +
+                `📋 *Modelo:* ${modelo}\n` +
+                `💳 *Financiamiento:* ${credito}\n` +
+                `💰 *Enganche:* $${engancheVal.toLocaleString('es-MX')}\n` +
+                `📅 *Plazo:* ${totalQuincenas} quincenas (${(totalQuincenas / 2).toFixed(0)} meses)\n` +
+                `💵 *Cuota Quincenal:* $${cuota.toLocaleString('es-MX')}\n\n` +
+                `✅ *Precio Total:* $${totalPagado.toLocaleString('es-MX')}\n\n` +
+                `¿Te interesa? Contáctame para más información. 🙌`;
+
+            const whatsappURL = `https://wa.me/5212282364842?text=${encodeURIComponent(mensaje)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        function enviarMSIPorWhatsApp(modelo, precio) {
+            const mensaje = `🏍️ *COTIZACIÓN DINAMO - MSI*\n\n` +
+                `📋 *Modelo:* ${modelo}\n` +
+                `💳 *Plan:* MSI (0% de intereses)\n` +
+                `✅ *Precio:* $${precio.toLocaleString('es-MX')}\n\n` +
+                `¿Te interesa financiar sin intereses? Contáctame. 🙌`;
+
+            const whatsappURL = `https://wa.me/5212282364842?text=${encodeURIComponent(mensaje)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        function enviarPorEmail(modelo, credito, enganche, plazo, engancheVal, cuota, totalQuincenas, totalPagado) {
+            const asunto = `Cotización DINAMO - ${modelo}`;
+            const cuerpo = `Hola DINAMO,%0D%0A%0D%0A` +
+                `Estoy interesado en la siguiente cotización:%0D%0A%0D%0A` +
+                `🏍️ MODELO: ${modelo}%0D%0A` +
+                `💳 FINANCIAMIENTO: ${credito}%0D%0A` +
+                `💰 ENGANCHE: $${engancheVal.toLocaleString('es-MX')}%0D%0A` +
+                `📅 PLAZO: ${totalQuincenas} quincenas (${(totalQuincenas / 2).toFixed(0)} meses)%0D%0A` +
+                `💵 CUOTA QUINCENAL: $${cuota.toLocaleString('es-MX')}%0D%0A%0D%0A` +
+                `✅ PRECIO TOTAL: $${totalPagado.toLocaleString('es-MX')}%0D%0A%0D%0A` +
+                `Favor de contactarme para confirmar la cotización.%0D%0A%0D%0A` +
+                `Saludos.`;
+
+            const emailURL = `mailto:contacto@dinamotos.mx?subject=${encodeURIComponent(asunto)}&body=${cuerpo}`;
+            window.open(emailURL, '_blank');
+        }
+
+        function enviarMSIPorEmail(modelo, precio) {
+            const asunto = `Cotización MSI DINAMO - ${modelo}`;
+            const cuerpo = `Hola DINAMO,%0D%0A%0D%0A` +
+                `Estoy interesado en la siguiente cotización:%0D%0A%0D%0A` +
+                `🏍️ MODELO: ${modelo}%0D%0A` +
+                `💳 PLAN: MSI (0% de intereses)%0D%0A` +
+                `✅ PRECIO: $${precio.toLocaleString('es-MX')}%0D%0A%0D%0A` +
+                `Quiero financiar sin intereses. Favor de contactarme.%0D%0A%0D%0A` +
+                `Saludos.`;
+
+            const emailURL = `mailto:contacto@dinamotos.mx?subject=${encodeURIComponent(asunto)}&body=${cuerpo}`;
+            window.open(emailURL, '_blank');
+        }
+    </script>
 </body>
 </html>
